@@ -24,7 +24,7 @@
 			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
-	<div class="container mx-auto flex justify-center mt-3">
+	<div class="container mx-auto flex justify-center mt-3 flex-col">
 		<slot />
 	</div>
 	<svelte:fragment slot="footer">
