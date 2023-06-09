@@ -5,12 +5,12 @@
 </script>
 
 
-<div class="card w-full mx-4">
+<div class="card w-full mb-4">
   <header class="card-header">
     <h2 class="sm:text-3xl text-xl"><a href="/blog/{post.slug}">{post.title}</a></h2>
     <div class="text-secondary-600 dark:text-secondary-100">{formatDate(post.created)}</div>
     <div class="flex flex-row">
-      {#each post.expand.tags as tag}
+      {#each (post.expand.tags ? post.expand.tags : []) as tag}
         <div class="card px-1 mr-2 variant-filled-primary"><a href="/tag/{tag.name}">{tag.name}</a></div>
       {/each}
     </div>
