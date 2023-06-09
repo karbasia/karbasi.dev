@@ -25,7 +25,7 @@
 </svelte:head>
 
 
-<div class="card w-full mx-4">
+<div class="card w-full">
 	<header class="card-header">
 		<h2 class="sm:text-3xl text-xl">{data.post.title}</h2>
 		<div class="text-secondary-600 dark:text-secondary-100">{formatDate(data.post.created)}</div>
