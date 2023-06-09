@@ -1,4 +1,4 @@
-module karbasi.dev/blog
+module karbasi.dev/server
 
 go 1.20
 

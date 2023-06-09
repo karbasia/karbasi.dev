@@ -7,6 +7,7 @@ import (
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
+	_ "karbasi.dev/server/migrations"
 )
 
 func main() {
