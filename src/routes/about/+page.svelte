@@ -15,7 +15,7 @@
   <section class="p-4">
     <div class="flex-row flex align-middle justify-center">
       <div class="px-2">
-        <button type="button" class="btn-icon btn-icon-xl variant-filled"><a href="https://www.github.com/amirk999" target="_blank"><i class="fa-brands fa-github fa-2xl"></i></a></button>
+        <button type="button" class="btn-icon btn-icon-xl variant-filled"><a href="https://www.github.com/karbasia" target="_blank"><i class="fa-brands fa-github fa-2xl"></i></a></button>
       </div>
       <div class="px-2">
         <button type="button" class="btn-icon btn-icon-xl variant-filled"><a href="https://www.linkedin.com/in/amirkarbasi" target="_blank"><i class="fa-brands fa-linkedin fa-2xl"></i></a></button>
