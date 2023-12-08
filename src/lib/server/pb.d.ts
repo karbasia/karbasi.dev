@@ -21,7 +21,7 @@ export interface PostRecord extends Record {
   created: Date;
   slug: string;
   subTitle: string;
-  expand: { tags: TagRecord[] };
+  expand: { tags?: TagRecord[] };
 }
 
 export interface ProfileRecord extends Record {
