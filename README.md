@@ -1,38 +1,32 @@
-# create-svelte
+# My Personal Blog Site
+This is the code repository for `karbasi.dev`. Feel free to use it and modify it to fit your needs! I quickly built my site with SvelteKit, Skeleton and Pocketbase.
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+# Development Quick Start
 
-## Creating a project
+Start the Pocketbase instance by running `go run main.go serve`.
 
-If you're seeing this, you've probably already done this step. Congrats!
+Run `npm install` to install the SvelteKit modules
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+Rename `.env.dev.local` to `.env`
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+Finally, run `npm run dev` to start the dev instance.
 
-## Developing
+The default dev URLs are:
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+- Pocketbase admin: http://127.0.0.1:8090/_/
+- SvelteKit frontend: http://localhost:5173
 
-```bash
-npm run dev
+Please ensure to log into the Pocketbase admin panel and set up the first account. From here, you can enter posts and site details.
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+# Production Deployment
 
-## Building
+I'm currently running my site on an old laptop with Cloudflare Tunnels. To build the production files, run the following commands:
 
-To create a production version of your app:
+Pocketbase: `go build main.go`
+SvelteKit: `npm run build`
 
-```bash
-npm run build
-```
+From here, you will have a `main` executable for the backend and a `build` folder for the frontend node app.
 
-You can preview the production build with `npm run preview`.
+Set up a local environment variable `POCKETBASE_URL` that's pointing to the Pocketbase endpoint. This can be an internal URL since SvelteKit will perform SSR on all requests.
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+I've set up these two as services on my computer abd utilize an nginx proxy to expose certain paths to the Cloudflare Tunnel. Further instructions TBD!
