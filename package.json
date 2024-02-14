@@ -34,7 +34,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"highlight.js": "^11.8.0",
 		"pocketbase": "^0.15.1"
 	}
 }
