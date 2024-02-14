@@ -7,6 +7,6 @@ export const formatDate = (date: Date) => {
 	});
 };
 
-export const getYear = (date: Date) => {
-	return new Date(date).getFullYear();
+export const getYear = (date?: Date) => {
+	return date ? new Date(date).getFullYear() : new Date().getFullYear();
 }

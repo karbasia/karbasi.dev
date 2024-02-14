@@ -2,8 +2,7 @@
 		import { onMount } from 'svelte';
 	import { formatDate } from '$lib/dateUtil';
 	import { afterNavigate } from '$app/navigation';
-	import hljs from 'highlight.js';
-
+	
 	export let data;
 	let previousPage : string = '/' ;
 
@@ -15,7 +14,8 @@
 
 	onMount(() => {
 		if (data.post.body.indexOf("<pre>") > 0) {
-			hljs.highlightAll();
+			// @ts-ignore
+			Prism.highlightAll();
 		}
   });
 </script>
