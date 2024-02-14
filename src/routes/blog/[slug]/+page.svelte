@@ -13,7 +13,7 @@
 	});
 
 	onMount(() => {
-		if (data.post.body.indexOf("<pre>") > 0) {
+		if (data.post.body.indexOf("</pre>") > 0) {
 			// @ts-ignore
 			Prism.highlightAll();
 		}
