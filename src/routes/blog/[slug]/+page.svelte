@@ -1,7 +1,9 @@
 <script lang="ts">
-		import { onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { formatDate } from '$lib/dateUtil';
 	import { afterNavigate } from '$app/navigation';
+	import { modeCurrent } from '@skeletonlabs/skeleton';
+	import mermaid from 'mermaid';
 	
 	export let data;
 	let previousPage : string = '/' ;
@@ -16,6 +18,13 @@
 		if (data.post.body.indexOf("</pre>") > 0) {
 			// @ts-ignore
 			Prism.highlightAll();
+		}
+		if (data.post.body.indexOf("<pre class=\"mermaid\">") > 0) {
+			mermaid.initialize({
+				startOnLoad: false,
+				theme: $modeCurrent ? 'neutral' : 'dark',
+			});
+			mermaid.run();
 		}
   });
 </script>
