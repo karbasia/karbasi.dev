@@ -34,6 +34,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"mermaid": "^10.8.0",
 		"pocketbase": "^0.15.1"
 	}
 }
