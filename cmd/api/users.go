@@ -1,0 +1,105 @@
+package main
+
+import (
+	"net/http"
+	"strconv"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/karbasia/karbasi.dev/internal/password"
+	"github.com/karbasia/karbasi.dev/internal/request"
+	"github.com/karbasia/karbasi.dev/internal/response"
+	"github.com/karbasia/karbasi.dev/internal/validator"
+)
+
+func (app *application) createUser(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		FullName  string              `json:"full_name"`
+		Email     string              `json:"email"`
+		Password  string              `json:"password"`
+		Validator validator.Validator `json:"-"`
+	}
+
+	ctx := r.Context()
+
+	err := request.DecodeJSON(w, r, &input)
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+
+	_, found, err := app.db.GetUserByEmail(ctx, input.Email)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	input.Validator.CheckField(input.FullName != "", "full_name", "Name is required")
+	input.Validator.CheckField(len(input.FullName) <= 100, "full_name", "Name must be 100 or fewer characters")
+
+	input.Validator.CheckField(input.Email != "", "email", "Email is required")
+	input.Validator.CheckField(validator.Matches(input.Email, validator.RgxEmail), "email", "Must be a valid email address")
+	input.Validator.CheckField(!found, "email", "Email is already in use")
+
+	input.Validator.CheckField(input.Password != "", "password", "Password is required")
+	input.Validator.CheckField(len(input.Password) >= 8, "password", "Password is too short")
+	input.Validator.CheckField(len(input.Password) <= 72, "password", "Password is too long")
+	input.Validator.CheckField(validator.NotIn(input.Password, password.CommonPasswords...), "password", "Password is too common")
+
+	if input.Validator.HasErrors() {
+		app.failedValidation(w, r, input.Validator)
+		return
+	}
+
+	hashedPassword, err := password.Hash(input.Password)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	_, err = app.db.InsertUser(ctx, input.FullName, input.Email, hashedPassword)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+}
+
+func (app *application) getUserByID(w http.ResponseWriter, r *http.Request) {
+	param := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(param)
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+
+	ctx := r.Context()
+
+	user, found, err := app.db.GetUserByID(ctx, id)
+	if !found {
+		app.notFound(w, r)
+		return
+	} else if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	err = response.JSON(w, http.StatusOK, user)
+	if err != nil {
+		app.serverError(w, r, err)
+	}
+
+}
+
+func (app *application) getAllUsers(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	users, err := app.db.GetAllUsers(ctx)
+	if err != nil {
+		app.serverError(w, r, err)
+	}
+	err = response.JSON(w, http.StatusOK, users)
+	if err != nil {
+		app.serverError(w, r, err)
+	}
+}
