@@ -15,7 +15,7 @@ type Post struct {
 	Slug        string     `json:"slug" db:"slug"`
 	Content     string     `json:"content" db:"content"`
 	Active      int        `json:"active" db:"active"`
-	CreatedByID int        `json:"created_by_id" db:"created_by_id"`
+	CreatedByID int        `json:"-" db:"created_by_id"`
 	PostedAt    *time.Time `json:"posted_at" db:"posted_at"`
 	CreatedAt   time.Time  `json:"created_at" db:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at" db:"updated_at"`
