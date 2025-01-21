@@ -11,13 +11,9 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-const defaultTimeout = 3 * time.Second
+const DefaultTimeout = 30 * time.Second
 
-type DB struct {
-	*sql.DB
-}
-
-func New(dsn string, automigrate bool) (*DB, error) {
+func New(dsn string, automigrate bool) (*sql.DB, error) {
 
 	pragmas := "" //"?_fk=1"
 	db, err := sql.Open("sqlite3", dsn+pragmas)
@@ -25,7 +21,7 @@ func New(dsn string, automigrate bool) (*DB, error) {
 		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	defer cancel()
 
 	err = db.PingContext(ctx)
@@ -49,5 +45,5 @@ func New(dsn string, automigrate bool) (*DB, error) {
 		}
 	}
 
-	return &DB{db}, nil
+	return db, nil
 }

@@ -16,25 +16,21 @@ func (app *application) routes() http.Handler {
 	r.Use(app.recoverPanic)
 	r.Use(app.authenticate)
 
-	r.Route("/posts", func(r chi.Router) {
-
-	})
-
 	r.Route("/users", func(r chi.Router) {
 		r.Get("/", app.getAllUsers)
 		r.Post("/", app.createUser)
 		r.Get("/{id}", app.getUserByID)
 	})
 
-	r.Get("/status", app.status)
+	r.Route("/posts", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			r.Use(app.requireAuthenticatedUser)
+			r.Post("/", app.createPost)
+		})
+		r.Get("/", app.getAllPosts)
+	})
 
 	r.Post("/authentication-tokens", app.createAuthenticationToken)
-
-	r.Group(func(r chi.Router) {
-		r.Use(app.requireAuthenticatedUser)
-
-		r.Get("/protected", app.protected)
-	})
 
 	return r
 }

@@ -86,7 +86,7 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 					return
 				}
 				ctx := r.Context()
-				user, found, err := app.db.GetUserByID(ctx, userID)
+				user, found, err := app.store.Users.GetByID(ctx, userID)
 				if err != nil {
 					app.serverError(w, r, err)
 					return

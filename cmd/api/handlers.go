@@ -37,7 +37,7 @@ func (app *application) createAuthenticationToken(w http.ResponseWriter, r *http
 		return
 	}
 	ctx := r.Context()
-	user, found, err := app.db.GetUserByEmail(ctx, input.Email)
+	user, found, err := app.store.Users.GetByEmail(ctx, input.Email)
 	if err != nil {
 		app.serverError(w, r, err)
 		return

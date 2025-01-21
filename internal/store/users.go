@@ -1,11 +1,18 @@
-package database
+package store
 
 import (
 	"context"
 	"database/sql"
 	"errors"
 	"time"
+
+	"github.com/karbasia/karbasi.dev/internal/database"
 )
+
+type UserCore struct {
+	ID       int    `json:"id" db:"id"`
+	FullName string `json:"full_name" db:"full_name"`
+}
 
 type User struct {
 	ID             int        `json:"id" db:"id"`
@@ -17,35 +24,46 @@ type User struct {
 	DeletedAt      *time.Time `json:"deleted_at" db:"deleted_at"`
 }
 
-func (db *DB) InsertUser(ctx context.Context, fullName, email, hashedPassword string) (int, error) {
-	ctx, cancel := context.WithTimeout(ctx, defaultTimeout)
+type UserStore struct {
+	db *sql.DB
+}
+
+func (s *UserStore) Create(ctx context.Context, user *User) error {
+	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
 	defer cancel()
 
 	query := `
 		INSERT INTO users (full_name, email, hashed_password)
-		VALUES ($1, $2, $3)`
+		VALUES ($1, $2, $3)
+		RETURNING id, created_at, updated_at
+		`
 
-	result, err := db.ExecContext(ctx, query, fullName, email, hashedPassword)
+	err := s.db.QueryRowContext(
+		ctx,
+		query,
+		user.FullName,
+		user.Email,
+		user.HashedPassword,
+	).Scan(
+		&user.ID,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
 	if err != nil {
-		return 0, err
+		return err
 	}
 
-	id, err := result.LastInsertId()
-	if err != nil {
-		return 0, err
-	}
-
-	return int(id), err
+	return nil
 }
 
-func (db *DB) GetUserByID(ctx context.Context, id int) (*User, bool, error) {
-	ctx, cancel := context.WithTimeout(ctx, defaultTimeout)
+func (s *UserStore) GetByID(ctx context.Context, id int) (*User, bool, error) {
+	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
 	defer cancel()
 
 	user := User{ID: id}
 
 	query := `SELECT full_name, email, hashed_password, created_at, updated_at, deleted_at FROM users WHERE id = $1`
-	err := db.QueryRowContext(ctx, query, id).Scan(
+	err := s.db.QueryRowContext(ctx, query, id).Scan(
 		&user.FullName,
 		&user.Email,
 		&user.HashedPassword,
@@ -60,15 +78,15 @@ func (db *DB) GetUserByID(ctx context.Context, id int) (*User, bool, error) {
 	return &user, true, err
 }
 
-func (db *DB) GetUserByEmail(ctx context.Context, email string) (*User, bool, error) {
-	ctx, cancel := context.WithTimeout(ctx, defaultTimeout)
+func (s *UserStore) GetByEmail(ctx context.Context, email string) (*User, bool, error) {
+	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
 	defer cancel()
 
 	user := User{Email: email}
 
 	query := `SELECT id, full_name, hashed_password, created_at, updated_at, deleted_at FROM users WHERE email = $1`
 
-	err := db.QueryRowContext(ctx, query, email).Scan(
+	err := s.db.QueryRowContext(ctx, query, email).Scan(
 		&user.ID,
 		&user.FullName,
 		&user.HashedPassword,
@@ -83,22 +101,22 @@ func (db *DB) GetUserByEmail(ctx context.Context, email string) (*User, bool, er
 	return &user, true, err
 }
 
-func (db *DB) UpdateUserHashedPassword(ctx context.Context, id int, hashedPassword string) error {
-	ctx, cancel := context.WithTimeout(ctx, defaultTimeout)
+func (s *UserStore) UpdateHashedPassword(ctx context.Context, id int, hashedPassword string) error {
+	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
 	defer cancel()
 
 	query := `UPDATE users SET hashed_password = $1 WHERE id = $2`
 
-	_, err := db.ExecContext(ctx, query, hashedPassword, id)
+	_, err := s.db.ExecContext(ctx, query, hashedPassword, id)
 	return err
 }
 
-func (db *DB) GetAllUsers(ctx context.Context) ([]User, error) {
-	ctx, cancel := context.WithTimeout(ctx, defaultTimeout)
+func (s *UserStore) GetAll(ctx context.Context) ([]User, error) {
+	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
 	defer cancel()
 
 	query := `SELECT id, full_name, email, created_at, updated_at FROM users WHERE deleted_at IS NULL`
-	rows, err := db.QueryContext(ctx, query)
+	rows, err := s.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}

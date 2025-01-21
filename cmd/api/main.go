@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/karbasia/karbasi.dev/internal/database"
+	"github.com/karbasia/karbasi.dev/internal/store"
 	"github.com/karbasia/karbasi.dev/internal/version"
 )
 
@@ -40,7 +41,7 @@ type config struct {
 
 type application struct {
 	config config
-	db     *database.DB
+	store  store.Storage
 	logger *slog.Logger
 	wg     sync.WaitGroup
 }
@@ -70,9 +71,11 @@ func run(logger *slog.Logger) error {
 	}
 	defer db.Close()
 
+	store := store.New(db)
+
 	app := &application{
 		config: cfg,
-		db:     db,
+		store:  store,
 		logger: logger,
 	}
 

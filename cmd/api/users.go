@@ -8,6 +8,7 @@ import (
 	"github.com/karbasia/karbasi.dev/internal/password"
 	"github.com/karbasia/karbasi.dev/internal/request"
 	"github.com/karbasia/karbasi.dev/internal/response"
+	"github.com/karbasia/karbasi.dev/internal/store"
 	"github.com/karbasia/karbasi.dev/internal/validator"
 )
 
@@ -27,7 +28,7 @@ func (app *application) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, found, err := app.db.GetUserByEmail(ctx, input.Email)
+	_, found, err := app.store.Users.GetByEmail(ctx, input.Email)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
@@ -56,13 +57,17 @@ func (app *application) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = app.db.InsertUser(ctx, input.FullName, input.Email, hashedPassword)
+	user := &store.User{
+		FullName:       input.FullName,
+		Email:          input.Email,
+		HashedPassword: hashedPassword,
+	}
+	err = app.store.Users.Create(ctx, user)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
 	}
-
-	w.WriteHeader(http.StatusCreated)
+	response.JSON(w, http.StatusCreated, user)
 }
 
 func (app *application) getUserByID(w http.ResponseWriter, r *http.Request) {
@@ -75,7 +80,7 @@ func (app *application) getUserByID(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
-	user, found, err := app.db.GetUserByID(ctx, id)
+	user, found, err := app.store.Users.GetByID(ctx, id)
 	if !found {
 		app.notFound(w, r)
 		return
@@ -94,7 +99,7 @@ func (app *application) getUserByID(w http.ResponseWriter, r *http.Request) {
 func (app *application) getAllUsers(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	users, err := app.db.GetAllUsers(ctx)
+	users, err := app.store.Users.GetAll(ctx)
 	if err != nil {
 		app.serverError(w, r, err)
 	}
