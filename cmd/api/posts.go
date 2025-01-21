@@ -28,6 +28,15 @@ func (app *application) createPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	input.Validator.CheckField(input.Title != "", "title", "A title is required")
+	input.Validator.CheckField(input.Slug != "", "slug", "A slug is required")
+	input.Validator.CheckField(input.Content != "", "content", "The post must require some content")
+
+	if input.Validator.HasErrors() {
+		app.failedValidation(w, r, input.Validator)
+		return
+	}
+
 	_, found, err := app.store.Posts.GetBySlug(ctx, input.Slug)
 	if err != nil {
 		app.serverError(w, r, err)
