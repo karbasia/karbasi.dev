@@ -55,7 +55,7 @@ func (app *application) badRequest(w http.ResponseWriter, r *http.Request, err e
 }
 
 func (app *application) failedValidation(w http.ResponseWriter, r *http.Request, v validator.Validator) {
-	err := response.JSON(w, http.StatusUnprocessableEntity, v)
+	err := response.JSONError(w, http.StatusUnprocessableEntity, v, nil)
 	if err != nil {
 		app.serverError(w, r, err)
 	}

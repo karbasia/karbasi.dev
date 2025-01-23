@@ -6,7 +6,17 @@ import (
 )
 
 func JSON(w http.ResponseWriter, status int, data any) error {
-	return JSONWithHeaders(w, status, data, nil)
+	type envelope struct {
+		Data any `json:"data"`
+	}
+	return JSONWithHeaders(w, status, &envelope{Data: data}, nil)
+}
+
+func JSONError(w http.ResponseWriter, status int, data any, headers http.Header) error {
+	type envelope struct {
+		Error any `json:"error"`
+	}
+	return JSONWithHeaders(w, status, &envelope{Error: data}, headers)
 }
 
 func JSONWithHeaders(w http.ResponseWriter, status int, data any, headers http.Header) error {
