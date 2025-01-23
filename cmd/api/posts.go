@@ -10,18 +10,18 @@ import (
 	"github.com/karbasia/karbasi.dev/internal/validator"
 )
 
+type PostInput struct {
+	Title     string              `json:"title"`
+	Slug      string              `json:"slug"`
+	Content   string              `json:"content"`
+	Active    int                 `json:"active"`
+	PostedAt  *time.Time          `json:"posted_at"`
+	Tags      []TagInput          `json:"tags"`
+	Validator validator.Validator `json:"-"`
+}
+
 func (app *application) createPost(w http.ResponseWriter, r *http.Request) {
-	var input struct {
-		Title     string              `json:"title"`
-		Slug      string              `json:"slug"`
-		Content   string              `json:"content"`
-		Active    int                 `json:"active"`
-		PostedAt  *time.Time          `json:"posted_at"`
-		Validator validator.Validator `json:"-"`
-	}
-
-	ctx := r.Context()
-
+	input := PostInput{}
 	err := request.DecodeJSON(w, r, &input)
 	if err != nil {
 		app.badRequest(w, r, err)
@@ -37,6 +37,7 @@ func (app *application) createPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ctx := r.Context()
 	_, found, err := app.store.Posts.GetBySlug(ctx, input.Slug)
 	if err != nil {
 		app.serverError(w, r, err)
@@ -69,6 +70,20 @@ func (app *application) createPost(w http.ResponseWriter, r *http.Request) {
 
 	app.store.Posts.Create(ctx, post)
 	err = response.JSON(w, http.StatusCreated, post)
+	if err != nil {
+		app.serverError(w, r, err)
+	}
+}
+
+func (app *application) updatePost(w http.ResponseWriter, r *http.Request) {
+	input := PostInput{}
+	err := request.DecodeJSON(w, r, &input)
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+
+	err = response.JSON(w, http.StatusCreated, input)
 	if err != nil {
 		app.serverError(w, r, err)
 	}

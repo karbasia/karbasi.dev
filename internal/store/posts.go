@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"time"
 
@@ -17,10 +18,11 @@ type Post struct {
 	Active      int        `json:"active" db:"active"`
 	CreatedByID int        `json:"-" db:"created_by_id"`
 	PostedAt    *time.Time `json:"posted_at" db:"posted_at"`
+	CreatedBy   UserCore   `json:"created_by"`
+	Tags        []TagCore  `json:"tags"`
 	CreatedAt   time.Time  `json:"created_at" db:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at" db:"updated_at"`
 	DeletedAt   *time.Time `json:"deleted_at" db:"deleted_at"`
-	CreatedBy   UserCore   `json:"created_by"`
 }
 
 type PostStore struct {
@@ -58,50 +60,58 @@ func (s *PostStore) Create(ctx context.Context, post *Post) error {
 	return nil
 }
 
-func (s *PostStore) GetByID(ctx context.Context, postID int) (*Post, bool, error) {
+func (s *PostStore) Update(ctx context.Context, post *Post) error {
 	query := `
-		SELECT p.id, p.title, p.slug, p.content, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, u.id, u.full_name
-		FROM posts p
-		INNER JOIN users u ON p.created_by_id = u.id
-		WHERE p.id=$1
+		UPDATE posts SET (title, slug, content, active, posted_at) =
+		($1, $2, $3, $4, $5)
+		WHERE id = $6
+		RETURNING created_at, updated_at;
 	`
 
 	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
 	defer cancel()
 
-	post := Post{ID: postID}
-
-	err := s.db.QueryRowContext(ctx, query, postID).Scan(
-		&post.Title,
-		&post.Slug,
-		&post.Content,
-		&post.Active,
-		&post.CreatedByID,
-		&post.PostedAt,
+	err := s.db.QueryRowContext(
+		ctx,
+		query,
+		post.Title,
+		post.Slug,
+		post.Content,
+		post.Active,
+		post.PostedAt,
+		post.ID,
+	).Scan(
 		&post.CreatedAt,
 		&post.UpdatedAt,
-		&post.CreatedBy.ID,
-		&post.CreatedBy.FullName,
 	)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, false, err
+	if err != nil {
+		return err
 	}
 
-	return &post, true, nil
+	return nil
 }
 
 func (s *PostStore) GetBySlug(ctx context.Context, slug string) (*Post, bool, error) {
 	query := `
-		SELECT p.id, p.title, p.slug, p.content, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, u.id, u.full_name
+		SELECT p.id, p.title, p.slug, p.content, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, u.id, u.full_name,
+			json_group_array(
+				json_object('id', t.id, 'name', t.name)
+			) filter (
+				where t.id IS NOT NULL
+			) AS tags
 		FROM posts p
 		INNER JOIN users u ON p.created_by_id = u.id
+		LEFT JOIN posts_to_tags pt ON p.id = pt.post_id
+		LEFT JOIN tags t ON pt.id = t.id
 		WHERE p.slug=$1
+		GROUP BY p.id
 	`
 
 	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
 	defer cancel()
 
 	post := Post{}
+	var tagData string
 
 	err := s.db.QueryRowContext(ctx, query, slug).Scan(
 		&post.ID,
@@ -115,21 +125,37 @@ func (s *PostStore) GetBySlug(ctx context.Context, slug string) (*Post, bool, er
 		&post.UpdatedAt,
 		&post.CreatedBy.ID,
 		&post.CreatedBy.FullName,
+		&tagData,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, false, nil
 	} else if err != nil {
 		return nil, false, err
 	}
+	err = json.Unmarshal([]byte(tagData), &post.Tags)
+	if err != nil {
+		return nil, false, err
+	}
 
 	return &post, true, nil
 }
 
-func (s *PostStore) GetAll(ctx context.Context) ([]Post, error) {
+func (s *PostStore) GetAllByTag(ctx context.Context, tagName string) ([]Post, error) {
 	query := `
-		SELECT p.id, p.title, p.slug, p.content, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, u.id, u.full_name
+		SELECT p.id, p.title, p.slug, p.content, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, u.id, u.full_name,
+			json_group_array(
+				json_object('id', t.id, 'name', t.name)
+			) filter (
+				where t.id IS NOT NULL
+			) AS tags
 		FROM posts p
 		INNER JOIN users u ON p.created_by_id = u.id
+		INNER JOIN posts_to_tags pt ON p.id = pt.post_id
+		INNER JOIN tags t ON pt.id = t.id
+		LEFT JOIN posts_to_tags pt2 ON p.id = pt2.post_id
+		LEFT JOIN tags t2 ON pt2.id = t2.id
+		WHERE t2.name=$1
+		GROUP BY p.id
 	`
 
 	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
@@ -145,6 +171,7 @@ func (s *PostStore) GetAll(ctx context.Context) ([]Post, error) {
 	var posts []Post
 	for rows.Next() {
 		p := Post{}
+		var tagData string
 		err := rows.Scan(
 			&p.ID,
 			&p.Title,
@@ -157,7 +184,68 @@ func (s *PostStore) GetAll(ctx context.Context) ([]Post, error) {
 			&p.UpdatedAt,
 			&p.CreatedBy.ID,
 			&p.CreatedBy.FullName,
+			&tagData,
 		)
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal([]byte(tagData), &p.Tags)
+		if err != nil {
+			return nil, err
+		}
+		posts = append(posts, p)
+	}
+	return posts, nil
+}
+
+func (s *PostStore) GetAll(ctx context.Context) ([]Post, error) {
+	query := `
+		SELECT p.id, p.title, p.slug, p.content, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, u.id, u.full_name,
+			json_group_array(
+				json_object('id', t.id, 'name', t.name)
+			) filter (
+				where t.id IS NOT NULL
+			) AS tags
+		FROM posts p
+		INNER JOIN users u ON p.created_by_id = u.id
+		LEFT JOIN posts_to_tags pt ON p.id = pt.post_id
+		LEFT JOIN tags t ON pt.id = t.id
+		GROUP BY p.id
+		ORDER BY p.posted_at DESC
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
+	defer cancel()
+
+	rows, err := s.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var posts []Post
+	for rows.Next() {
+		p := Post{}
+		var tagData string
+		err := rows.Scan(
+			&p.ID,
+			&p.Title,
+			&p.Slug,
+			&p.Content,
+			&p.Active,
+			&p.CreatedByID,
+			&p.PostedAt,
+			&p.CreatedAt,
+			&p.UpdatedAt,
+			&p.CreatedBy.ID,
+			&p.CreatedBy.FullName,
+			&tagData,
+		)
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal([]byte(tagData), &p.Tags)
 		if err != nil {
 			return nil, err
 		}

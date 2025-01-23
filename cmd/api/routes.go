@@ -26,8 +26,17 @@ func (app *application) routes() http.Handler {
 		r.Group(func(r chi.Router) {
 			r.Use(app.requireAuthenticatedUser)
 			r.Post("/", app.createPost)
+			r.Patch("/{id}", app.updatePost)
 		})
 		r.Get("/", app.getAllPosts)
+	})
+
+	r.Route("/tags", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			r.Use(app.requireAuthenticatedUser)
+			r.Post("/", app.createTag)
+		})
+		r.Get("/", app.getAllTags)
 	})
 
 	r.Post("/authentication-tokens", app.createAuthenticationToken)

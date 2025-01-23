@@ -8,7 +8,7 @@ import (
 type Storage struct {
 	Posts interface {
 		Create(context.Context, *Post) error
-		GetByID(context.Context, int) (*Post, bool, error)
+		GetAllByTag(context.Context, string) ([]Post, error)
 		GetBySlug(context.Context, string) (*Post, bool, error)
 		GetAll(context.Context) ([]Post, error)
 	}
@@ -19,11 +19,16 @@ type Storage struct {
 		UpdateHashedPassword(context.Context, int, string) error
 		GetAll(context.Context) ([]User, error)
 	}
+	Tags interface {
+		Create(context.Context, *Tag) error
+		GetAll(context.Context) ([]Tag, error)
+	}
 }
 
 func New(db *sql.DB) Storage {
 	return Storage{
 		Posts: &PostStore{db},
 		Users: &UserStore{db},
+		Tags:  &TagStore{db},
 	}
 }
