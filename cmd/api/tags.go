@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/karbasia/karbasi.dev/internal/request"
 	"github.com/karbasia/karbasi.dev/internal/response"
 	"github.com/karbasia/karbasi.dev/internal/store"
@@ -58,6 +59,24 @@ func (app *application) getAllTags(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = response.JSON(w, http.StatusOK, tags)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+}
+
+func (app *application) getAllPostsByTag(w http.ResponseWriter, r *http.Request) {
+	tag := chi.URLParam(r, "tag")
+
+	ctx := r.Context()
+
+	posts, err := app.store.Posts.GetAllByTag(ctx, tag)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	err = response.JSON(w, http.StatusOK, posts)
 	if err != nil {
 		app.serverError(w, r, err)
 		return

@@ -8,6 +8,7 @@ import (
 type Storage struct {
 	Posts interface {
 		Create(context.Context, *Post) error
+		Update(context.Context, *Post) error
 		GetAllByTag(context.Context, string) ([]Post, error)
 		GetBySlug(context.Context, string) (*Post, bool, error)
 		GetAll(context.Context) ([]Post, error)

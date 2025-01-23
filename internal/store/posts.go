@@ -30,6 +30,13 @@ type PostStore struct {
 }
 
 func (s *PostStore) Create(ctx context.Context, post *Post) error {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	defer tx.Rollback()
+
 	query := `
 		INSERT INTO posts (title, slug, content, active, created_by_id, posted_at)
 		VALUES ($1, $2, $3, $4, $5, $6) 
@@ -39,7 +46,7 @@ func (s *PostStore) Create(ctx context.Context, post *Post) error {
 	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
 	defer cancel()
 
-	err := s.db.QueryRowContext(
+	err = tx.QueryRowContext(
 		ctx,
 		query,
 		post.Title,
@@ -57,10 +64,27 @@ func (s *PostStore) Create(ctx context.Context, post *Post) error {
 		return err
 	}
 
+	err = associateTags(ctx, tx, post.ID, post.Tags)
+	if err != nil {
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (s *PostStore) Update(ctx context.Context, post *Post) error {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	defer tx.Rollback()
+
 	query := `
 		UPDATE posts SET (title, slug, content, active, posted_at) =
 		($1, $2, $3, $4, $5)
@@ -71,7 +95,7 @@ func (s *PostStore) Update(ctx context.Context, post *Post) error {
 	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
 	defer cancel()
 
-	err := s.db.QueryRowContext(
+	err = tx.QueryRowContext(
 		ctx,
 		query,
 		post.Title,
@@ -84,6 +108,21 @@ func (s *PostStore) Update(ctx context.Context, post *Post) error {
 		&post.CreatedAt,
 		&post.UpdatedAt,
 	)
+	if err != nil {
+		return err
+	}
+
+	err = removeTags(ctx, tx, post.ID, post.Tags)
+	if err != nil {
+		return err
+	}
+
+	err = associateTags(ctx, tx, post.ID, post.Tags)
+	if err != nil {
+		return err
+	}
+
+	err = tx.Commit()
 	if err != nil {
 		return err
 	}
@@ -102,7 +141,7 @@ func (s *PostStore) GetBySlug(ctx context.Context, slug string) (*Post, bool, er
 		FROM posts p
 		INNER JOIN users u ON p.created_by_id = u.id
 		LEFT JOIN posts_to_tags pt ON p.id = pt.post_id
-		LEFT JOIN tags t ON pt.id = t.id
+		LEFT JOIN tags t ON pt.tag_id = t.id
 		WHERE p.slug=$1
 		GROUP BY p.id
 	`
@@ -151,17 +190,18 @@ func (s *PostStore) GetAllByTag(ctx context.Context, tagName string) ([]Post, er
 		FROM posts p
 		INNER JOIN users u ON p.created_by_id = u.id
 		INNER JOIN posts_to_tags pt ON p.id = pt.post_id
-		INNER JOIN tags t ON pt.id = t.id
+		INNER JOIN tags t ON pt.tag_id = t.id
 		LEFT JOIN posts_to_tags pt2 ON p.id = pt2.post_id
-		LEFT JOIN tags t2 ON pt2.id = t2.id
+		LEFT JOIN tags t2 ON pt2.tag_id = t2.id
 		WHERE t2.name=$1
 		GROUP BY p.id
+		ORDER BY p.posted_at DESC
 	`
 
 	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
 	defer cancel()
 
-	rows, err := s.db.QueryContext(ctx, query)
+	rows, err := s.db.QueryContext(ctx, query, tagName)
 	if err != nil {
 		return nil, err
 	}
@@ -209,7 +249,7 @@ func (s *PostStore) GetAll(ctx context.Context) ([]Post, error) {
 		FROM posts p
 		INNER JOIN users u ON p.created_by_id = u.id
 		LEFT JOIN posts_to_tags pt ON p.id = pt.post_id
-		LEFT JOIN tags t ON pt.id = t.id
+		LEFT JOIN tags t ON pt.tag_id = t.id
 		GROUP BY p.id
 		ORDER BY p.posted_at DESC
 	`
@@ -252,4 +292,68 @@ func (s *PostStore) GetAll(ctx context.Context) ([]Post, error) {
 		posts = append(posts, p)
 	}
 	return posts, nil
+}
+
+func removeTags(ctx context.Context, tx *sql.Tx, postID int, tags []TagCore) error {
+	query := `
+		DELETE FROM posts_to_tags
+		WHERE post_id = $1
+			AND tag_id NOT IN (
+				SELECT json_extract(json_each.value, '$.id')
+				FROM json_each($2)
+			);
+	`
+
+	data, err := json.Marshal(tags)
+	if err != nil {
+		return err
+	}
+
+	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
+	defer cancel()
+
+	_, err = tx.ExecContext(
+		ctx,
+		query,
+		postID,
+		string(data),
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func associateTags(ctx context.Context, tx *sql.Tx, postID int, tags []TagCore) error {
+	query := `
+		INSERT INTO posts_to_tags(post_id, tag_id)
+			SELECT $1, id
+			FROM tags
+			WHERE id IN (
+				SELECT json_extract(json_each.value, '$.id')
+				FROM json_each($2)
+			)
+		ON CONFLICT(post_id, tag_id) DO NOTHING;
+	`
+
+	data, err := json.Marshal(tags)
+	if err != nil {
+		return err
+	}
+
+	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
+	defer cancel()
+
+	_, err = tx.ExecContext(
+		ctx,
+		query,
+		postID,
+		string(data),
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

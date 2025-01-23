@@ -37,6 +37,7 @@ func (app *application) routes() http.Handler {
 			r.Post("/", app.createTag)
 		})
 		r.Get("/", app.getAllTags)
+		r.Get("/{tag}", app.getAllPostsByTag)
 	})
 
 	r.Post("/authentication-tokens", app.createAuthenticationToken)
