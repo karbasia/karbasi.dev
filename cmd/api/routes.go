@@ -29,6 +29,7 @@ func (app *application) routes() http.Handler {
 			r.Patch("/{id}", app.updatePost)
 		})
 		r.Get("/", app.getAllPosts)
+		r.Get("/{slug}", app.getPostBySlug)
 	})
 
 	r.Route("/tags", func(r chi.Router) {

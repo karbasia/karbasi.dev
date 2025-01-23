@@ -139,3 +139,23 @@ func (app *application) getAllPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (app *application) getPostBySlug(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	ctx := r.Context()
+
+	post, found, err := app.store.Posts.GetBySlug(ctx, slug)
+	if !found {
+		app.notFound(w, r)
+		return
+	} else if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	err = response.JSON(w, http.StatusOK, post)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+}
