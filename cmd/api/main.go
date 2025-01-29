@@ -27,10 +27,7 @@ func main() {
 type config struct {
 	baseURL  string
 	httpPort int
-	cookie   struct {
-		secretKey string
-	}
-	db struct {
+	db       struct {
 		dsn         string
 		automigrate bool
 	}
@@ -51,7 +48,6 @@ func run(logger *slog.Logger) error {
 
 	flag.StringVar(&cfg.baseURL, "base-url", "http://localhost:8080", "base URL for the application")
 	flag.IntVar(&cfg.httpPort, "http-port", 8080, "port to listen on for HTTP requests")
-	flag.StringVar(&cfg.cookie.secretKey, "cookie-secret-key", "laqh2hnh3y4qh3kljxe6tai5rw4aennr", "secret key for cookie authentication/encryption")
 	flag.StringVar(&cfg.db.dsn, "db-dsn", "db.sqlite", "sqlite3 DSN")
 	flag.BoolVar(&cfg.db.automigrate, "db-automigrate", true, "run migrations on startup")
 	flag.StringVar(&cfg.jwt.secretKey, "jwt-secret-key", "vyiwjr425wpr277oxf34tcmg73mmkcks", "secret key for JWT authentication")
