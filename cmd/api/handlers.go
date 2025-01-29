@@ -13,7 +13,7 @@ import (
 	"github.com/pascaldekloe/jwt"
 )
 
-func (app *application) createAuthenticationToken(w http.ResponseWriter, r *http.Request) {
+func (app *application) handleLogin(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Email     string              `json:"email"`
 		Password  string              `json:"password"`
@@ -51,10 +51,88 @@ func (app *application) createAuthenticationToken(w http.ResponseWriter, r *http
 		return
 	}
 
-	var claims jwt.Claims
-	claims.Subject = strconv.Itoa(user.ID)
+	userID := strconv.Itoa(user.ID)
+	accessExpiry := time.Now().Add(30 * time.Minute)
+	accessToken, err := app.generateToken(accessExpiry, app.config.jwt.accessSecretKey, userID)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
 
-	expiry := time.Now().Add(24 * time.Hour)
+	refreshExpiry := time.Now().Add(7 * 24 * time.Hour)
+	refreshToken, err := app.generateToken(refreshExpiry, app.config.jwt.refreshSecretKey, userID)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	data := map[string]string{
+		"access_token":         string(accessToken),
+		"access_token_expiry":  accessExpiry.Format(time.RFC3339),
+		"refresh_token":        string(refreshToken),
+		"refresh_token_expiry": refreshExpiry.Format(time.RFC3339),
+	}
+
+	err = response.JSON(w, http.StatusOK, data)
+	if err != nil {
+		app.serverError(w, r, err)
+	}
+}
+
+func (app *application) handleRefresh(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		RefreshToken string `json:"refresh_token"`
+	}
+
+	err := request.DecodeJSON(w, r, &input)
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+
+	claims, err := jwt.HMACCheck([]byte(input.RefreshToken), []byte(app.config.jwt.refreshSecretKey))
+	if err != nil {
+		app.invalidRefreshToken(w, r)
+		return
+	}
+
+	if !claims.Valid(time.Now()) {
+		app.invalidRefreshToken(w, r)
+		return
+	}
+
+	if claims.Issuer != app.config.baseURL {
+		app.invalidRefreshToken(w, r)
+		return
+	}
+
+	if !claims.AcceptAudience(app.config.baseURL) {
+		app.invalidRefreshToken(w, r)
+		return
+	}
+
+	accessExpiry := time.Now().Add(30 * time.Minute)
+	accessToken, err := app.generateToken(accessExpiry, app.config.jwt.accessSecretKey, claims.Subject)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	data := map[string]string{
+		"access_token":        string(accessToken),
+		"access_token_expiry": accessExpiry.Format(time.RFC3339),
+	}
+
+	err = response.JSON(w, http.StatusOK, data)
+	if err != nil {
+		app.serverError(w, r, err)
+	}
+}
+
+func (app *application) generateToken(expiry time.Time, secret, subject string) ([]byte, error) {
+	var claims jwt.Claims
+	claims.Subject = subject
+
 	claims.Issued = jwt.NewNumericTime(time.Now())
 	claims.NotBefore = jwt.NewNumericTime(time.Now())
 	claims.Expires = jwt.NewNumericTime(expiry)
@@ -62,19 +140,5 @@ func (app *application) createAuthenticationToken(w http.ResponseWriter, r *http
 	claims.Issuer = app.config.baseURL
 	claims.Audiences = []string{app.config.baseURL}
 
-	jwtBytes, err := claims.HMACSign(jwt.HS256, []byte(app.config.jwt.secretKey))
-	if err != nil {
-		app.serverError(w, r, err)
-		return
-	}
-
-	data := map[string]string{
-		"AuthenticationToken":       string(jwtBytes),
-		"AuthenticationTokenExpiry": expiry.Format(time.RFC3339),
-	}
-
-	err = response.JSON(w, http.StatusOK, data)
-	if err != nil {
-		app.serverError(w, r, err)
-	}
+	return claims.HMACSign(jwt.HS256, []byte(secret))
 }

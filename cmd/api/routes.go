@@ -41,7 +41,10 @@ func (app *application) routes() http.Handler {
 		r.Get("/{tag}", app.getAllPostsByTag)
 	})
 
-	r.Post("/authentication-tokens", app.createAuthenticationToken)
+	r.Route("/auth", func(r chi.Router) {
+		r.Post("/login", app.handleLogin)
+		r.Post("/refresh", app.handleRefresh)
+	})
 
 	return r
 }

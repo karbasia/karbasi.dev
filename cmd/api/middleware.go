@@ -59,7 +59,7 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 			if len(headerParts) == 2 && headerParts[0] == "Bearer" {
 				token := headerParts[1]
 
-				claims, err := jwt.HMACCheck([]byte(token), []byte(app.config.jwt.secretKey))
+				claims, err := jwt.HMACCheck([]byte(token), []byte(app.config.jwt.accessSecretKey))
 				if err != nil {
 					app.invalidAuthenticationToken(w, r)
 					return

@@ -68,6 +68,13 @@ func (app *application) invalidAuthenticationToken(w http.ResponseWriter, r *htt
 	app.errorMessage(w, r, http.StatusUnauthorized, "Invalid authentication token", headers)
 }
 
+func (app *application) invalidRefreshToken(w http.ResponseWriter, r *http.Request) {
+	headers := make(http.Header)
+	headers.Set("WWW-Authenticate", "Bearer")
+
+	app.errorMessage(w, r, http.StatusUnauthorized, "Invalid refresh token", headers)
+}
+
 func (app *application) authenticationRequired(w http.ResponseWriter, r *http.Request) {
 	app.errorMessage(w, r, http.StatusUnauthorized, "You must be authenticated to access this resource", nil)
 }

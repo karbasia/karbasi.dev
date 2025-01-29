@@ -117,7 +117,7 @@ func (app *application) updatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = response.JSON(w, http.StatusCreated, post)
+	err = response.JSON(w, http.StatusOK, post)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
