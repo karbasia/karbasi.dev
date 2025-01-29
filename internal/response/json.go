@@ -15,8 +15,9 @@ func JSON(w http.ResponseWriter, status int, data any) error {
 func JSONError(w http.ResponseWriter, status int, data any, headers http.Header) error {
 	type envelope struct {
 		Error any `json:"error"`
+		Code  int `json:"code"`
 	}
-	return JSONWithHeaders(w, status, &envelope{Error: data}, headers)
+	return JSONWithHeaders(w, status, &envelope{Error: data, Code: status}, headers)
 }
 
 func JSONWithHeaders(w http.ResponseWriter, status int, data any, headers http.Header) error {
