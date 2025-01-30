@@ -2,38 +2,46 @@ import { API_URL } from '$env/static/private';
 import type { ErrorMessage } from '$lib/models/common';
 
 export enum HttpRequest {
-  GET = 'GET',
-  POST = 'POST',
-  PUT = 'PUT',
-  PATCH = 'PATCH',
-  DELETE = 'DELETE',
+	GET = 'GET',
+	POST = 'POST',
+	PUT = 'PUT',
+	PATCH = 'PATCH',
+	DELETE = 'DELETE',
 }
 
 export interface RequestParams {
-  method: HttpRequest;
-  path: string;
-  body?: string;
-  auth?: string;
+	method: HttpRequest;
+	path: string;
+	query?: { [key: string]: string };
+	body?: string;
+	auth?: string;
 }
 
-export const createRequest = async <T=object>(params: RequestParams): Promise<T | ErrorMessage> => {
-  const opts: RequestInit = {};
-  let headers: HeadersInit = {};
+export const createRequest = async <T = object>(
+	params: RequestParams,
+): Promise<T | ErrorMessage> => {
+	const opts: RequestInit = {};
+	let headers: HeadersInit = {};
 
-  if (params.body) {
-    headers = { 'Content-Type': 'application/json' };
-    opts.body = params.body;
-  }
+	const url = new URL(`${API_URL}${params.path}`);
+	if (params.query) {
+		Object.entries(params.query).map((v, _) => url.searchParams.append(v[0], v[1]));
+	}
 
-  if (params.auth) headers = { ...headers, Authorization: `Bearer ${params.auth}` };
+	if (params.body) {
+		headers = { 'Content-Type': 'application/json' };
+		opts.body = params.body;
+	}
 
-  opts.method = params.method;
-  opts.headers = headers;
+	if (params.auth) headers = { ...headers, Authorization: `Bearer ${params.auth}` };
 
-  const response = await fetch(`${API_URL}${params.path}`, opts);
+	opts.method = params.method;
+	opts.headers = headers;
 
-  if (!response.ok) return (await response.json()) as ErrorMessage;
+	const response = await fetch(url, opts);
 
-  const res =  await response.json();
-  return res.data as T;
-}
+	if (!response.ok) return (await response.json()) as ErrorMessage;
+
+	const res = await response.json();
+	return res.data as T;
+};

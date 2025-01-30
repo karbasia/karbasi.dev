@@ -1,3 +1,15 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
+body {
+	@apply h-full;
+	@apply bg-etch-200;
+}
+html {
+	@apply h-full;
+	@apply text-midnight-600;
+	a {
+		@apply text-rose-900 transition duration-300 hover:text-rose-700;
+	}
+}
