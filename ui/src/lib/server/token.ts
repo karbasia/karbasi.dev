@@ -20,7 +20,8 @@ export function setRefreshTokenCookie(cookies: Cookies, refreshToken: string, ex
 	});
 }
 
-export function removeAuth(cookies: Cookies): void {
+export function removeAuth(cookies: Cookies, locals: App.Locals): void {
+	locals.user = null;
 	cookies.delete('accessToken', { path: '/' });
 	cookies.delete('refreshToken', { path: '/' });
 }
