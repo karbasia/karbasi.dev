@@ -20,6 +20,10 @@ func (app *application) routes() http.Handler {
 		r.Get("/", app.getAllUsers)
 		r.Post("/", app.createUser)
 		r.Get("/{id}", app.getUserByID)
+		r.Group(func(r chi.Router) {
+			r.Use(app.requireAuthenticatedUser)
+			r.Get("/me", app.getCurrentUser)
+		})
 	})
 
 	r.Route("/posts", func(r chi.Router) {

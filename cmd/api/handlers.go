@@ -8,10 +8,19 @@ import (
 	"github.com/karbasia/karbasi.dev/internal/password"
 	"github.com/karbasia/karbasi.dev/internal/request"
 	"github.com/karbasia/karbasi.dev/internal/response"
+	"github.com/karbasia/karbasi.dev/internal/store"
 	"github.com/karbasia/karbasi.dev/internal/validator"
 
 	"github.com/pascaldekloe/jwt"
 )
+
+type AuthResponse struct {
+	AccessToken        string          `json:"access_token"`
+	AccessTokenExpiry  string          `json:"access_token_expiry"`
+	RefreshToken       string          `json:"refresh_token"`
+	RefreshTokenExpiry string          `json:"refresh_token_expiry"`
+	UserInfo           *store.UserCore `json:"user_info"`
+}
 
 func (app *application) handleLogin(w http.ResponseWriter, r *http.Request) {
 	var input struct {
@@ -66,11 +75,12 @@ func (app *application) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := map[string]string{
-		"access_token":         string(accessToken),
-		"access_token_expiry":  accessExpiry.Format(time.RFC3339),
-		"refresh_token":        string(refreshToken),
-		"refresh_token_expiry": refreshExpiry.Format(time.RFC3339),
+	data := AuthResponse{
+		AccessToken:        string(accessToken),
+		AccessTokenExpiry:  accessExpiry.Format(time.RFC3339),
+		RefreshToken:       string(refreshToken),
+		RefreshTokenExpiry: refreshExpiry.Format(time.RFC3339),
+		UserInfo:           &store.UserCore{ID: user.ID, FullName: user.FullName},
 	}
 
 	err = response.JSON(w, http.StatusOK, data)
@@ -111,6 +121,18 @@ func (app *application) handleRefresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ctx := r.Context()
+	err, userID := strconv.Atoi(claims.Subject)
+	if err != nil {
+		app.invalidRefreshToken(w, r)
+		return
+	}
+	user, found, err := app.store.Users.GetByID(ctx, userID)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
 	accessExpiry := time.Now().Add(30 * time.Minute)
 	accessToken, err := app.generateToken(accessExpiry, app.config.jwt.accessSecretKey, claims.Subject)
 	if err != nil {
@@ -118,9 +140,10 @@ func (app *application) handleRefresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := map[string]string{
-		"access_token":        string(accessToken),
-		"access_token_expiry": accessExpiry.Format(time.RFC3339),
+	data := AuthResponse{
+		AccessToken:       string(accessToken),
+		AccessTokenExpiry: accessExpiry.Format(time.RFC3339),
+		UserInfo:          &store.UserCore{ID: user.ID, FullName: user.FullName},
 	}
 
 	err = response.JSON(w, http.StatusOK, data)

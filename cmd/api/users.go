@@ -108,3 +108,18 @@ func (app *application) getAllUsers(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, r, err)
 	}
 }
+
+func (app *application) getCurrentUser(w http.ResponseWriter, r *http.Request) {
+	user := contextGetAuthenticatedUser(r)
+
+	userCore := store.UserCore{
+		ID:       user.ID,
+		FullName: user.FullName,
+	}
+
+	err := response.JSON(w, http.StatusOK, userCore)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+}
