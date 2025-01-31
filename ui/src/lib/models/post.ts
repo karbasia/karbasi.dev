@@ -1,5 +1,5 @@
 import type { Tag } from './tag';
-import type { CoreUser } from './user';
+import type { UserCore } from './user';
 
 export interface Post {
 	id: number;
@@ -7,10 +7,10 @@ export interface Post {
 	slug: string;
 	content: string;
 	active: 0 | 1;
-	posted_at: Date;
-	created_by: CoreUser;
-	tags?: Tag[];
-	created_at: Date;
-	updated_at: Date;
-	deleted_at?: Date;
+	posted_at: string;
+	created_by: UserCore;
+	tags: Tag[] | null;
+	created_at: string;
+	updated_at: string;
+	deleted_at: string | null;
 }

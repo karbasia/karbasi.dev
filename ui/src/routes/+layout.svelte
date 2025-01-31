@@ -18,12 +18,13 @@
 			<a href="/" class="text-2xl font-bold">karbasi.dev</a>
 			<div class="hidden space-x-4 md:block">
 				<a href="/about" class={page.url.pathname === '/about' ? 'font-bold' : 'font-semibold'}
-					>About</a
-				>
+					>About
+				</a>
 				<a
 					href="/projects"
-					class={page.url.pathname === '/projects' ? 'font-bold' : 'font-semibold'}>Projects</a
-				>
+					class={page.url.pathname === '/projects' ? 'font-bold' : 'font-semibold'}
+					>Projects
+				</a>
 			</div>
 			<div class="md:hidden">
 				<button onclick={handleMenuClick}><Menu /></button>
@@ -42,13 +43,13 @@
 				<a
 					href="/about"
 					class="px-6 py-2 {page.url.pathname === '/about' ? 'font-bold' : 'font-semibold'}"
-					>About</a
-				>
+					>About
+				</a>
 				<a
 					href="/projects"
 					class="px-6 py-2 {page.url.pathname === '/projects' ? 'font-bold' : 'font-semibold'}"
-					>Projects</a
-				>
+					>Projects
+				</a>
 			</div>
 		</div>
 	</nav>
