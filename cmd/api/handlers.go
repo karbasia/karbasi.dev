@@ -122,12 +122,12 @@ func (app *application) handleRefresh(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	err, userID := strconv.Atoi(claims.Subject)
+	userID, err := strconv.Atoi(claims.Subject)
 	if err != nil {
 		app.invalidRefreshToken(w, r)
 		return
 	}
-	user, found, err := app.store.Users.GetByID(ctx, userID)
+	user, _, err := app.store.Users.GetByID(ctx, userID)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
