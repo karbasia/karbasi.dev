@@ -3,13 +3,13 @@
 	import { page } from '$app/state';
 	import { Menu, X } from 'lucide-svelte';
 
-	let { children } = $props();
+	let { data, children } = $props();
 	let menuOpen = $state(false);
+
+	console.log(data);
 
 	const handleMenuClick = () => (menuOpen = !menuOpen);
 	const handleMenuClose = () => (menuOpen = false);
-
-	$inspect(menuOpen);
 </script>
 
 <header class="bg-sea-300 fixed top-0 w-full">
@@ -25,6 +25,11 @@
 					class={page.url.pathname === '/projects' ? 'font-bold' : 'font-semibold'}
 					>Projects
 				</a>
+				{#if data.user}
+					<a href="/admin" class={page.url.pathname === '/admin' ? 'font-bold' : 'font-semibold'}
+						>Admin
+					</a>
+				{/if}
 			</div>
 			<div class="md:hidden">
 				<button onclick={handleMenuClick}><Menu /></button>
@@ -50,6 +55,13 @@
 					class="px-6 py-2 {page.url.pathname === '/projects' ? 'font-bold' : 'font-semibold'}"
 					>Projects
 				</a>
+				{#if data.user}
+					<a
+						href="/admin"
+						class="px-6 py-2 {page.url.pathname === '/admin' ? 'font-bold' : 'font-semibold'}"
+						>Admin
+					</a>
+				{/if}
 			</div>
 		</div>
 	</nav>

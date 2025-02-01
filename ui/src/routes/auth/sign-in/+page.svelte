@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
 
-	let { data, form }: PageProps = $props();
+	let { form }: PageProps = $props();
 </script>
 
 <div class="flex min-h-screen items-center justify-center">
