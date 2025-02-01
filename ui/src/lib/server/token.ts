@@ -1,7 +1,7 @@
 import type { LoginResult } from '$lib/models/common';
 import { type Cookies } from '@sveltejs/kit';
 
-export function setAccessTokenCookie(cookies: Cookies, accessToken: string, expiry: Date): void {
+export const setAccessTokenCookie = (cookies: Cookies, accessToken: string, expiry: Date): void => {
 	cookies.set('accessToken', accessToken, {
 		httpOnly: true,
 		path: '/',
@@ -9,9 +9,13 @@ export function setAccessTokenCookie(cookies: Cookies, accessToken: string, expi
 		sameSite: 'strict',
 		expires: expiry,
 	});
-}
+};
 
-export function setRefreshTokenCookie(cookies: Cookies, refreshToken: string, expiry: Date): void {
+export const setRefreshTokenCookie = (
+	cookies: Cookies,
+	refreshToken: string,
+	expiry: Date,
+): void => {
 	cookies.set('refreshToken', refreshToken, {
 		httpOnly: true,
 		path: '/',
@@ -19,9 +23,9 @@ export function setRefreshTokenCookie(cookies: Cookies, refreshToken: string, ex
 		sameSite: 'strict',
 		expires: expiry,
 	});
-}
+};
 
-export function setAuth(cookies: Cookies, locals: App.Locals, loginResponse: LoginResult): void {
+export const setAuth = (cookies: Cookies, locals: App.Locals, loginResponse: LoginResult): void => {
 	locals.user = loginResponse.user_info;
 	setAccessTokenCookie(
 		cookies,
@@ -33,10 +37,10 @@ export function setAuth(cookies: Cookies, locals: App.Locals, loginResponse: Log
 		loginResponse.refresh_token,
 		new Date(loginResponse.refresh_token_expiry),
 	);
-}
+};
 
-export function clearAuth(cookies: Cookies, locals: App.Locals): void {
+export const clearAuth = (cookies: Cookies, locals: App.Locals): void => {
 	locals.user = null;
 	cookies.delete('accessToken', { path: '/' });
 	cookies.delete('refreshToken', { path: '/' });
-}
+};
