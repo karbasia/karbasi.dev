@@ -1,1 +1,1 @@
-<p>coming soon!</p>
+<p>Put some statistics here</p>
