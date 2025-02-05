@@ -8,7 +8,7 @@ body {
 }
 html {
 	@apply h-full;
-	@apply text-midnight-600;
+	@apply text-surface-600;
 	a {
 		@apply text-rose-900 transition duration-300 hover:text-rose-700;
 	}
