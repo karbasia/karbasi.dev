@@ -53,7 +53,7 @@ const verifyLoggedInUser: Handle = async ({ event, resolve }) => {
 const protectRoutes: Handle = async ({ event, resolve }) => {
 	if (protectedRoutes.some((route) => event.url.pathname.startsWith(route))) {
 		const accessToken = event.cookies.get('accessToken');
-		if (!accessToken) redirect(302, '/');
+		if (!accessToken) redirect(302, `/auth/sign-in/?redirectTo=${event.url.href}`);
 	}
 	return await resolve(event);
 };

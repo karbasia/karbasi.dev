@@ -2,7 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { LoginResult } from '$lib/models/common';
 import { createRequest, HttpRequest, type RequestParams } from '$lib/server/api';
 import type { Actions } from './$types';
-import { setAccessTokenCookie, setAuth, setRefreshTokenCookie } from '$lib/server/token';
+import { setAuth } from '$lib/server/token';
 
 export const actions = {
 	default: async (event) => {
@@ -21,7 +21,6 @@ export const actions = {
 			return fail(loginResponse.code, { email, incorrect: true });
 		}
 		setAuth(event.cookies, event.locals, loginResponse);
-		redirect(303, '/admin');
-		return { success: true };
+		redirect(303, event.url.searchParams.get('redirectTo') ?? '/admin');
 	},
 } satisfies Actions;
