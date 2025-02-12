@@ -19,6 +19,7 @@ type PostInput struct {
 	Content   string              `json:"content"`
 	Active    int                 `json:"active"`
 	PostedAt  *time.Time          `json:"posted_at"`
+	DeletedAt *time.Time          `json:"deleted_at"`
 	Tags      []store.TagCore     `json:"tags"`
 	Validator validator.Validator `json:"-"`
 }
@@ -102,13 +103,14 @@ func (app *application) updatePost(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 	post := &store.Post{
-		ID:       postID,
-		Title:    input.Title,
-		Slug:     input.Slug,
-		Content:  input.Content,
-		Active:   input.Active,
-		PostedAt: input.PostedAt,
-		Tags:     input.Tags,
+		ID:        postID,
+		Title:     input.Title,
+		Slug:      input.Slug,
+		Content:   input.Content,
+		Active:    input.Active,
+		PostedAt:  input.PostedAt,
+		DeletedAt: input.DeletedAt,
+		Tags:      input.Tags,
 	}
 
 	err = app.store.Posts.Update(ctx, post)
@@ -126,7 +128,11 @@ func (app *application) updatePost(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) getAllPosts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	posts, err := app.store.Posts.GetAll(ctx)
+	showDeleted, err := strconv.ParseBool(r.URL.Query().Get("showDeleted"))
+	if err != nil {
+		showDeleted = false
+	}
+	posts, err := app.store.Posts.GetAll(ctx, showDeleted)
 
 	if err != nil {
 		app.serverError(w, r, err)

@@ -11,18 +11,19 @@ type Storage struct {
 		Update(context.Context, *Post) error
 		GetAllByTag(context.Context, string) ([]Post, error)
 		GetBySlug(context.Context, string) (*Post, bool, error)
-		GetAll(context.Context) ([]Post, error)
+		GetAll(context.Context, bool) ([]Post, error)
 	}
 	Users interface {
 		Create(context.Context, *User) error
+		Update(context.Context, *User) error
 		GetByID(context.Context, int) (*User, bool, error)
 		GetByEmail(context.Context, string) (*User, bool, error)
-		UpdateHashedPassword(context.Context, int, string) error
 		GetAll(context.Context) ([]User, error)
 	}
 	Tags interface {
 		Create(context.Context, *Tag) error
-		GetAll(context.Context) ([]Tag, error)
+		Update(context.Context, *Tag) error
+		GetAll(context.Context, bool) ([]Tag, error)
 	}
 }
 

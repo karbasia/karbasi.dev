@@ -2,6 +2,8 @@ package main
 
 import (
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/karbasia/karbasi.dev/internal/request"
@@ -13,6 +15,7 @@ import (
 type TagInput struct {
 	ID        int                 `json:"id"`
 	Name      string              `json:"name"`
+	DeletedAt *time.Time          `json:"deleted_at"`
 	Validator validator.Validator `json:"-"`
 }
 
@@ -52,7 +55,12 @@ func (app *application) getAllTags(w http.ResponseWriter, r *http.Request) {
 
 	var tags []store.Tag
 
-	tags, err := app.store.Tags.GetAll(ctx)
+	showDeleted, err := strconv.ParseBool(r.URL.Query().Get("showDeleted"))
+	if err != nil {
+		showDeleted = false
+	}
+
+	tags, err = app.store.Tags.GetAll(ctx, showDeleted)
 	if err != nil {
 		app.serverError(w, r, err)
 		return

@@ -56,6 +56,36 @@ func (s *UserStore) Create(ctx context.Context, user *User) error {
 	return nil
 }
 
+func (s *UserStore) Update(ctx context.Context, user *User) error {
+	query := `
+		UPDATE users SET (full_name, email, hashed_password, deleted_at) =
+		($1, $2, $3, $4)
+		WHERE id = $5
+		RETURNING created_at, updated_at;
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
+	defer cancel()
+
+	err := s.db.QueryRowContext(
+		ctx,
+		query,
+		user.FullName,
+		user.Email,
+		user.HashedPassword,
+		user.DeletedAt,
+		user.ID,
+	).Scan(
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *UserStore) GetByID(ctx context.Context, id int) (*User, bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
 	defer cancel()
@@ -99,16 +129,6 @@ func (s *UserStore) GetByEmail(ctx context.Context, email string) (*User, bool, 
 	}
 
 	return &user, true, err
-}
-
-func (s *UserStore) UpdateHashedPassword(ctx context.Context, id int, hashedPassword string) error {
-	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
-	defer cancel()
-
-	query := `UPDATE users SET hashed_password = $1 WHERE id = $2`
-
-	_, err := s.db.ExecContext(ctx, query, hashedPassword, id)
-	return err
 }
 
 func (s *UserStore) GetAll(ctx context.Context) ([]User, error) {

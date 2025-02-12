@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/karbasia/karbasi.dev/internal/database"
@@ -86,9 +87,9 @@ func (s *PostStore) Update(ctx context.Context, post *Post) error {
 	defer tx.Rollback()
 
 	query := `
-		UPDATE posts SET (title, slug, content, active, posted_at) =
-		($1, $2, $3, $4, $5)
-		WHERE id = $6
+		UPDATE posts SET (title, slug, content, active, posted_at, deleted_at) =
+		($1, $2, $3, $4, $5, $6)
+		WHERE id = $7
 		RETURNING created_at, updated_at;
 	`
 
@@ -103,6 +104,7 @@ func (s *PostStore) Update(ctx context.Context, post *Post) error {
 		post.Content,
 		post.Active,
 		post.PostedAt,
+		post.DeletedAt,
 		post.ID,
 	).Scan(
 		&post.CreatedAt,
@@ -132,7 +134,8 @@ func (s *PostStore) Update(ctx context.Context, post *Post) error {
 
 func (s *PostStore) GetBySlug(ctx context.Context, slug string) (*Post, bool, error) {
 	query := `
-		SELECT p.id, p.title, p.slug, p.content, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, u.id, u.full_name,
+		SELECT p.id, p.title, p.slug, p.content, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, p.deleted_at, 
+			u.id, u.full_name,
 			json_group_array(
 				json_object('id', t.id, 'name', t.name)
 			) filter (
@@ -162,6 +165,7 @@ func (s *PostStore) GetBySlug(ctx context.Context, slug string) (*Post, bool, er
 		&post.PostedAt,
 		&post.CreatedAt,
 		&post.UpdatedAt,
+		&post.DeletedAt,
 		&post.CreatedBy.ID,
 		&post.CreatedBy.FullName,
 		&tagData,
@@ -181,7 +185,7 @@ func (s *PostStore) GetBySlug(ctx context.Context, slug string) (*Post, bool, er
 
 func (s *PostStore) GetAllByTag(ctx context.Context, tagName string) ([]Post, error) {
 	query := `
-		SELECT p.id, p.title, p.slug, p.content, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, u.id, u.full_name,
+		SELECT p.id, p.title, p.slug, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, u.id, u.full_name,
 			json_group_array(
 				json_object('id', t.id, 'name', t.name)
 			) filter (
@@ -193,7 +197,7 @@ func (s *PostStore) GetAllByTag(ctx context.Context, tagName string) ([]Post, er
 		INNER JOIN tags t ON pt.tag_id = t.id
 		LEFT JOIN posts_to_tags pt2 ON p.id = pt2.post_id
 		LEFT JOIN tags t2 ON pt2.tag_id = t2.id
-		WHERE t2.name=$1
+		WHERE t2.name=$1 AND p.deleted_at IS NULL
 		GROUP BY p.id
 		ORDER BY p.posted_at DESC
 	`
@@ -216,7 +220,6 @@ func (s *PostStore) GetAllByTag(ctx context.Context, tagName string) ([]Post, er
 			&p.ID,
 			&p.Title,
 			&p.Slug,
-			&p.Content,
 			&p.Active,
 			&p.CreatedByID,
 			&p.PostedAt,
@@ -238,9 +241,13 @@ func (s *PostStore) GetAllByTag(ctx context.Context, tagName string) ([]Post, er
 	return posts, nil
 }
 
-func (s *PostStore) GetAll(ctx context.Context) ([]Post, error) {
-	query := `
-		SELECT p.id, p.title, p.slug, p.content, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, u.id, u.full_name,
+func (s *PostStore) GetAll(ctx context.Context, showDeleted bool) ([]Post, error) {
+	filterParam := ""
+	if !showDeleted {
+		filterParam = "WHERE p.deleted_at IS NULL"
+	}
+	query := fmt.Sprintf(`
+		SELECT p.id, p.title, p.slug, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, u.id, u.full_name, p.deleted_at,
 			json_group_array(
 				json_object('id', t.id, 'name', t.name)
 			) filter (
@@ -250,9 +257,10 @@ func (s *PostStore) GetAll(ctx context.Context) ([]Post, error) {
 		INNER JOIN users u ON p.created_by_id = u.id
 		LEFT JOIN posts_to_tags pt ON p.id = pt.post_id
 		LEFT JOIN tags t ON pt.tag_id = t.id
+		%s
 		GROUP BY p.id
 		ORDER BY p.posted_at DESC
-	`
+	`, filterParam)
 
 	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
 	defer cancel()
@@ -272,7 +280,6 @@ func (s *PostStore) GetAll(ctx context.Context) ([]Post, error) {
 			&p.ID,
 			&p.Title,
 			&p.Slug,
-			&p.Content,
 			&p.Active,
 			&p.CreatedByID,
 			&p.PostedAt,
@@ -280,6 +287,7 @@ func (s *PostStore) GetAll(ctx context.Context) ([]Post, error) {
 			&p.UpdatedAt,
 			&p.CreatedBy.ID,
 			&p.CreatedBy.FullName,
+			&p.DeletedAt,
 			&tagData,
 		)
 		if err != nil {
