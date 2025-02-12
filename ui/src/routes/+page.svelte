@@ -10,5 +10,7 @@
 </svelte:head>
 
 {#each data.posts as post}
-	<PostCard {post}></PostCard>
+	{#if !post.deleted_at && post.active === 1}
+		<PostCard {post}></PostCard>
+	{/if}
 {/each}

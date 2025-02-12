@@ -8,6 +8,9 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		method: HttpRequest.GET,
 		path: '/posts',
 	};
+	if (locals.user) {
+		params.query = { showDeleted: 'true' };
+	}
 	const data = await createRequest<Post[]>(params);
 	if ('error' in data) return error(data.code, data.error);
 

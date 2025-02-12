@@ -24,7 +24,7 @@
 					<td class="px-6 py-2 text-left"
 						>{tag.deleted_at ? new Date(tag.deleted_at).toLocaleDateString() : ''}</td
 					>
-					<td class="px-6 py-2 text-left">...</td>
+					<td class="px-6 py-2 text-left"><a href={`/${tag.id}`}>Open</a></td>
 				</tr>
 			{/each}
 		</tbody>

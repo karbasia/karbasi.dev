@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { Post } from '$lib/models/post';
-	import Badge from '../badge/badge.svelte';
+	import Badge from '../Badge/Badge.svelte';
 	let { post }: { post: Post } = $props();
 </script>
 
 <div class="flex flex-col pb-5">
-	<h2>{post.title}</h2>
+	<h2><a href={`/${post.slug}`}>{post.title}</a></h2>
 	<div>Posted at {new Date(post.posted_at).toLocaleDateString()}</div>
 	<div>
 		{#each post.tags || [] as tag}
