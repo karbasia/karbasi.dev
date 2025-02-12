@@ -32,11 +32,7 @@ const verifyLoggedInUser: Handle = async ({ event, resolve }) => {
 						// Refresh token is invalid. Clear out all cookies
 						clearAuth(event.cookies, event.locals);
 					} else {
-						setAccessTokenCookie(
-							event.cookies,
-							refreshData.access_token,
-							new Date(refreshData.access_token_expiry),
-						);
+						setAccessTokenCookie(event.cookies, refreshData.access_token);
 						event.locals.user = refreshData.user_info;
 					}
 				}
