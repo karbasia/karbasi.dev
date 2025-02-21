@@ -1,7 +1,79 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
-@plugin 'tailwindcss/typography';
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@theme {
+	--color-primary-50: #e8f4f8;
+	--color-primary-100: #d4eaf2;
+	--color-primary-200: #a6d4e3;
+	--color-primary-300: #7bbfd6;
+	--color-primary-400: #4ca8c7;
+	--color-primary-500: #348aa7;
+	--color-primary-600: #296d84;
+	--color-primary-700: #1f5465;
+	--color-primary-800: #153742;
+	--color-primary-900: #0b1d23;
+	--color-primary-950: #050d10;
+
+	--color-secondary-50: #f6f3f7;
+	--color-secondary-100: #ebe4ec;
+	--color-secondary-200: #d6c9d9;
+	--color-secondary-300: #c2afc6;
+	--color-secondary-400: #ae94b3;
+	--color-secondary-500: #9a7aa0;
+	--color-secondary-600: #7d5d83;
+	--color-secondary-700: #5e4662;
+	--color-secondary-800: #3f2f41;
+	--color-secondary-900: #1f1721;
+	--color-secondary-950: #110d12;
+
+	--color-tertiary-50: #f8edef;
+	--color-tertiary-100: #f1dadf;
+	--color-tertiary-200: #e3b5bf;
+	--color-tertiary-300: #d4919f;
+	--color-tertiary-400: #c66c7f;
+	--color-tertiary-500: #b6465f;
+	--color-tertiary-600: #93394c;
+	--color-tertiary-700: #6e2b39;
+	--color-tertiary-800: #4a1c26;
+	--color-tertiary-900: #250e13;
+	--color-tertiary-950: #12070a;
+
+	--color-surface-50: #e9eceb;
+	--color-surface-100: #d3d9d7;
+	--color-surface-200: #a8b3ae;
+	--color-surface-300: #7c8d86;
+	--color-surface-400: #55625d;
+	--color-surface-500: #2e3532;
+	--color-surface-600: #262c29;
+	--color-surface-700: #1c211f;
+	--color-surface-800: #131615;
+	--color-surface-900: #090b0a;
+	--color-surface-950: #050505;
+
+	--color-etch-50: #fdfdfc;
+	--color-etch-100: #f8f8f7;
+	--color-etch-200: #f3f4f1;
+	--color-etch-300: #ecede8;
+	--color-etch-400: #e7e8e3;
+	--color-etch-500: #e0e2db;
+	--color-etch-600: #b6bbaa;
+	--color-etch-700: #8a9277;
+	--color-etch-800: #5d6350;
+	--color-etch-900: #2d3027;
+	--color-etch-950: #181914;
+
+	--color-rose-50: #feecec;
+	--color-rose-100: #fcdede;
+	--color-rose-200: #fabdbd;
+	--color-rose-300: #f79c9c;
+	--color-rose-400: #f57a7a;
+	--color-rose-500: #f25757;
+	--color-rose-600: #ed1c1c;
+	--color-rose-700: #b90e0e;
+	--color-rose-800: #7b0a0a;
+	--color-rose-900: #3e0505;
+	--color-rose-950: #1c0202;
+}
 
 body {
 	@apply h-full;

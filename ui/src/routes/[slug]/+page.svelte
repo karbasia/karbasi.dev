@@ -8,6 +8,8 @@
 	<title>Karbasi.dev | {data.post.title}</title>
 </svelte:head>
 
-<div>{@html data.post.content}</div>
+<article class="prose">
+	{@html data.post.content}
 
-<Editor post={data.post} editable={false}></Editor>
+	<Editor post={data.post} editable={false}></Editor>
+</article>
