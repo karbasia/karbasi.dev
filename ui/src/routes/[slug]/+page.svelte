@@ -1,7 +1,6 @@
 <script lang="ts">
 	import hljs from 'highlight.js';
 	import 'highlight.js/styles/github-dark.css';
-	import Editor from '$lib/components/ui/Editor/Editor.svelte';
 	import { onMount } from 'svelte';
 
 	let { data } = $props();
@@ -16,5 +15,4 @@
 
 <article class="prose dark:prose-invert max-w-none">
 	{@html data.post.content}
-	<Editor post={data.post} editable={true}></Editor>
 </article>
