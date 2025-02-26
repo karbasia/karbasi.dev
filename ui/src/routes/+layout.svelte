@@ -16,7 +16,7 @@
 	];
 </script>
 
-<header class="bg-primary-300 fixed top-0 w-full">
+<header class="fixed top-0 w-full">
 	<nav class="container mx-auto py-3">
 		<div class="flex items-center justify-between">
 			<a href="/" class="text-2xl font-bold">karbasi.dev</a>
@@ -36,10 +36,10 @@
 			</div>
 		</div>
 		<div
-			class="bg-primary-300 fixed inset-y-0 right-0 w-48 transform flex-col transition-transform duration-300 ease-in-out
+			class="bg-etch-200 dark:bg-surface-800 fixed inset-y-0 right-0 w-48 transform flex-col transition-transform duration-300 ease-in-out
 			{menuOpen ? '' : 'translate-x-full'}"
 		>
-			<div class="flex flex-row justify-end px-6 py-3">
+			<div class="flex flex-row justify-end py-3">
 				<button onclick={handleMenuClose}>
 					<X />
 				</button>

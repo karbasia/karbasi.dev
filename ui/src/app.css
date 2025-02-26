@@ -78,11 +78,13 @@
 body {
 	@apply h-full;
 	@apply bg-etch-200;
+	@apply dark:bg-surface-800;
 }
 html {
 	@apply h-full;
 	@apply text-surface-600;
+	@apply dark:text-etch-200;
 	a {
-		@apply text-rose-900 transition duration-300 hover:text-rose-700;
+		@apply dark:text-primary-300 dark:hover:text-primary-100 text-primary-800 hover:text-primary-500 transition duration-300;
 	}
 }

@@ -12,7 +12,7 @@
 		{#each menuItems as menuOption}
 			<a href={menuOption.path} class="flex flex-1 flex-col">
 				<div
-					class="{page.url.pathname === menuOption.path ? 'bg-etch-50' : ''}
+					class="{page.url.pathname === menuOption.path ? 'bg-etch-50 dark:bg-surface-500' : ''}
                 flex flex-1 flex-col items-center border-2 py-2 pb-2 pl-16 text-lg
                 {page.url.pathname === menuOption.path ? 'font-bold' : 'font-semibold'}"
 				>
