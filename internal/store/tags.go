@@ -9,17 +9,12 @@ import (
 	"github.com/karbasia/karbasi.dev/internal/database"
 )
 
-type TagCore struct {
-	ID   int    `json:"id" db:"id"`
-	Name string `json:"name" db:"name"`
-}
-
 type Tag struct {
-	ID        int        `json:"id" db:"id"`
+	ID        int        `json:"id,omitzero,omitempty" db:"id"`
 	Name      string     `json:"name" db:"name"`
-	CreatedAt time.Time  `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at" db:"updated_at"`
-	DeletedAt *time.Time `json:"deleted_at" db:"deleted_at"`
+	CreatedAt *time.Time `json:"created_at,omitzero" db:"created_at"`
+	UpdatedAt *time.Time `json:"updated_at,omitzero" db:"updated_at"`
+	DeletedAt *time.Time `json:"deleted_at,omitzero" db:"deleted_at"`
 }
 
 type TagStore struct {
@@ -30,7 +25,8 @@ func (s *TagStore) Create(ctx context.Context, tag *Tag) error {
 	query := `
 		INSERT INTO tags(name)
 		VALUES($1)
-		RETURNING id, created_at, updated_at
+		ON CONFLICT(name) DO UPDATE SET deleted_at = NULL
+		RETURNING id, created_at, updated_at;
 	`
 	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
 	defer cancel()
@@ -84,7 +80,7 @@ func (s *TagStore) GetAll(ctx context.Context, showDeleted bool) ([]Tag, error) 
 		filterParam = "WHERE deleted_at IS NULL"
 	}
 	query := fmt.Sprintf(`
-		SELECT id, name, created_at, updated_at
+		SELECT id, name, created_at, updated_at, deleted_at
 		FROM tags
 		%s
 		ORDER BY name
@@ -107,6 +103,7 @@ func (s *TagStore) GetAll(ctx context.Context, showDeleted bool) ([]Tag, error) 
 			&t.Name,
 			&t.CreatedAt,
 			&t.UpdatedAt,
+			&t.DeletedAt,
 		)
 		if err != nil {
 			return nil, err

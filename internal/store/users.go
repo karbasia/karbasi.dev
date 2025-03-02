@@ -19,9 +19,9 @@ type User struct {
 	FullName       string     `json:"full_name" db:"full_name"`
 	Email          string     `json:"email" db:"email"`
 	HashedPassword string     `json:"-" db:"hashed_password"`
-	CreatedAt      time.Time  `json:"created_at" db:"created_at"`
-	UpdatedAt      time.Time  `json:"updated_at" db:"updated_at"`
-	DeletedAt      *time.Time `json:"deleted_at" db:"deleted_at"`
+	CreatedAt      *time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt      *time.Time `json:"updated_at" db:"updated_at"`
+	DeletedAt      *time.Time `json:"deleted_at,omitzero" db:"deleted_at"`
 }
 
 type UserStore struct {

@@ -18,9 +18,9 @@ type PostInput struct {
 	Slug      string              `json:"slug"`
 	Content   string              `json:"content"`
 	Active    int                 `json:"active"`
-	PostedAt  *time.Time          `json:"posted_at"`
-	DeletedAt *time.Time          `json:"deleted_at"`
-	Tags      []store.TagCore     `json:"tags"`
+	PostedAt  *time.Time          `json:"posted_at,omitzero"`
+	DeletedAt *time.Time          `json:"deleted_at,omitzero"`
+	Tags      []store.Tag         `json:"tags"`
 	Validator validator.Validator `json:"-"`
 }
 
@@ -60,6 +60,13 @@ func (app *application) createPost(w http.ResponseWriter, r *http.Request) {
 	userCore := store.UserCore{
 		ID:       user.ID,
 		FullName: user.FullName,
+	}
+
+	// Verify the tags and create them if they do not exist
+	for i := 0; i < len(input.Tags); i++ {
+		if input.Tags[i].ID == 0 {
+			app.store.Tags.Create(ctx, &input.Tags[i])
+		}
 	}
 
 	post := &store.Post{

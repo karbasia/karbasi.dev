@@ -15,7 +15,7 @@ import (
 type TagInput struct {
 	ID        int                 `json:"id"`
 	Name      string              `json:"name"`
-	DeletedAt *time.Time          `json:"deleted_at"`
+	DeletedAt time.Time           `json:"deleted_at,omitzero"`
 	Validator validator.Validator `json:"-"`
 }
 

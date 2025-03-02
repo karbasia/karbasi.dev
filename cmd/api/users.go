@@ -18,7 +18,7 @@ func (app *application) createUser(w http.ResponseWriter, r *http.Request) {
 		FullName  string              `json:"full_name"`
 		Email     string              `json:"email"`
 		Password  string              `json:"password"`
-		DeletedAt *time.Time          `json:"deleted_at"`
+		DeletedAt time.Time           `json:"deleted_at,omitzero"`
 		Validator validator.Validator `json:"-"`
 	}
 

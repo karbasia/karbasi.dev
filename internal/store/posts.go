@@ -18,12 +18,12 @@ type Post struct {
 	Content     string     `json:"content" db:"content"`
 	Active      int        `json:"active" db:"active"`
 	CreatedByID int        `json:"-" db:"created_by_id"`
-	PostedAt    *time.Time `json:"posted_at" db:"posted_at"`
+	PostedAt    *time.Time `json:"posted_at,omitzero" db:"posted_at"`
 	CreatedBy   UserCore   `json:"created_by"`
-	Tags        []TagCore  `json:"tags"`
-	CreatedAt   time.Time  `json:"created_at" db:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at" db:"updated_at"`
-	DeletedAt   *time.Time `json:"deleted_at" db:"deleted_at"`
+	Tags        []Tag      `json:"tags"`
+	CreatedAt   *time.Time `json:"created_at,omitzero" db:"created_at"`
+	UpdatedAt   *time.Time `json:"updated_at,omitzero" db:"updated_at"`
+	DeletedAt   *time.Time `json:"deleted_at,omitzero" db:"deleted_at"`
 }
 
 type PostStore struct {
@@ -302,7 +302,7 @@ func (s *PostStore) GetAll(ctx context.Context, showDeleted bool) ([]Post, error
 	return posts, nil
 }
 
-func removeTags(ctx context.Context, tx *sql.Tx, postID int, tags []TagCore) error {
+func removeTags(ctx context.Context, tx *sql.Tx, postID int, tags []Tag) error {
 	query := `
 		DELETE FROM posts_to_tags
 		WHERE post_id = $1
@@ -333,7 +333,7 @@ func removeTags(ctx context.Context, tx *sql.Tx, postID int, tags []TagCore) err
 	return nil
 }
 
-func associateTags(ctx context.Context, tx *sql.Tx, postID int, tags []TagCore) error {
+func associateTags(ctx context.Context, tx *sql.Tx, postID int, tags []Tag) error {
 	query := `
 		INSERT INTO posts_to_tags(post_id, tag_id)
 			SELECT $1, id

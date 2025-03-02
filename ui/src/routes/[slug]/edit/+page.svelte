@@ -2,8 +2,6 @@
 	import Editor from '$lib/components/ui/Editor/Editor.svelte';
 
 	let { data, form } = $props();
-	console.log(data.post.posted_at.split('T')[0]);
-	data.post.id;
 </script>
 
 <svelte:head>
@@ -11,9 +9,25 @@
 </svelte:head>
 
 <div class="my-4 flex-row">
-	<div>Title: <input value={data.post.title} /></div>
-	<div>Slug: <input value={data.post.slug} /></div>
-	<div>Posted date: <input type="date" value={data.post.posted_at.split('T')[0]} /></div>
+	<div>
+		Title: <input
+			class="dark:text-surface-950 dark:bg-surface-100 border-surface-700 focus:border-secondary-500 focus:ring-secondary-500 rounded-lg border px-4 py-2 outline-none transition-all focus:ring-2"
+			value={data.post.title}
+		/>
+	</div>
+	<div>
+		Slug: <input
+			class="dark:text-surface-950 dark:bg-surface-100 border-surface-700 focus:border-secondary-500 focus:ring-secondary-500 rounded-lg border px-4 py-2 outline-none transition-all focus:ring-2"
+			value={data.post.slug}
+		/>
+	</div>
+	<div>
+		Posted date: <input
+			class="dark:text-surface-950 dark:bg-surface-100 border-surface-700 focus:border-secondary-500 focus:ring-secondary-500 rounded-lg border px-4 py-2 outline-none transition-all focus:ring-2"
+			type="date"
+			value={data.post.posted_at.split('T')[0]}
+		/>
+	</div>
 	<div><input type="checkbox" checked={data.post.active === 1} /> Active?</div>
 	<button
 		class="dark:bg-primary-600 bg-primary-800 cursor-pointer rounded px-4"
