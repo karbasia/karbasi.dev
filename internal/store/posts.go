@@ -212,7 +212,7 @@ func (s *PostStore) GetAllByTag(ctx context.Context, tagName string) ([]Post, er
 
 	defer rows.Close()
 
-	var posts []Post
+	posts := []Post{}
 	for rows.Next() {
 		p := Post{}
 		var tagData string
@@ -272,7 +272,7 @@ func (s *PostStore) GetAll(ctx context.Context, showDeleted bool) ([]Post, error
 
 	defer rows.Close()
 
-	var posts []Post
+	posts := []Post{}
 	for rows.Next() {
 		p := Post{}
 		var tagData string
