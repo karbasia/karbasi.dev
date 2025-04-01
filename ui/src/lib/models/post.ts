@@ -1,16 +1,19 @@
-import type { PostTag } from './tag';
-import type { UserCore } from './user';
+import { z } from 'zod';
+import { tagCoreSchema } from './tag';
+import { userCoreSchema } from './user';
 
-export interface Post {
-	id: number;
-	title: string;
-	slug: string;
-	content: string;
-	active: 0 | 1;
-	posted_at: string;
-	created_by: UserCore;
-	tags: PostTag[] | null;
-	created_at: string;
-	updated_at: string;
-	deleted_at: string | null;
-}
+const postSchema = z.object({
+	id: z.number(),
+	title: z.string(),
+	slug: z.string(),
+	content: z.string().optional(),
+	active: z.union([z.literal(0), z.literal(1)]),
+	posted_at: z.string().datetime().nullable(),
+	created_by: userCoreSchema,
+	tags: z.array(tagCoreSchema),
+	created_at: z.string().datetime(),
+	updated_at: z.string().datetime(),
+	deleted_at: z.string().datetime().nullable(),
+});
+
+export type Post = z.infer<typeof postSchema>;

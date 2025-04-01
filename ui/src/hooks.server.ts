@@ -1,9 +1,10 @@
 import { redirect, type Handle } from '@sveltejs/kit';
 import type { UserCore } from '$lib/models/user';
-import { createRequest, HttpRequest, type RequestParams } from '$lib/server/api';
+import { createRequest } from '$lib/server/api';
 import type { RefreshTokenResult } from '$lib/models/common';
 import { clearAuth, setAccessTokenCookie } from '$lib/server/token';
 import { sequence } from '@sveltejs/kit/hooks';
+import { httpRequestEnum, type RequestParams } from '$lib/models/api';
 
 const protectedRoutes = ['/profile', '/admin', '/auth/sign-out'];
 
@@ -13,7 +14,7 @@ const verifyLoggedInUser: Handle = async ({ event, resolve }) => {
 		if (accessToken) {
 			// Validate the Access Token
 			const params: RequestParams = {
-				method: HttpRequest.GET,
+				method: httpRequestEnum.enum.GET,
 				path: '/users/me',
 				auth: accessToken,
 			};
@@ -23,7 +24,7 @@ const verifyLoggedInUser: Handle = async ({ event, resolve }) => {
 				const refreshToken = event.cookies.get('refreshToken');
 				if (refreshToken) {
 					const refreshParams: RequestParams = {
-						method: HttpRequest.POST,
+						method: httpRequestEnum.enum.POST,
 						path: '/auth/refresh',
 						body: JSON.stringify({ refresh_token: refreshToken }),
 					};

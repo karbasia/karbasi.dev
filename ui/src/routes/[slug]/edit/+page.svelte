@@ -1,6 +1,4 @@
 <script lang="ts">
-	import Editor from '$lib/components/ui/Editor/Editor.svelte';
-
 	let { data, form } = $props();
 </script>
 
@@ -25,7 +23,7 @@
 		Posted date: <input
 			class="dark:text-surface-950 dark:bg-surface-100 border-surface-700 focus:border-secondary-500 focus:ring-secondary-500 rounded-lg border px-4 py-2 outline-none transition-all focus:ring-2"
 			type="date"
-			value={data.post.posted_at.split('T')[0]}
+			value={data.post.posted_at ? data.post.posted_at.split('T')[0] : null}
 		/>
 	</div>
 	<div><input type="checkbox" checked={data.post.active === 1} /> Active?</div>
@@ -35,5 +33,5 @@
 	>
 </div>
 <article class="prose dark:prose-invert max-w-none">
-	<Editor post={data.post} editable={true}></Editor>
+	<!-- <Editor post={data.post} editable={true}></Editor> -->
 </article>

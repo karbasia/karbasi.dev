@@ -1,21 +1,6 @@
 import { API_URL } from '$env/static/private';
+import type { RequestParams } from '$lib/models/api';
 import type { ErrorMessage } from '$lib/models/common';
-
-export enum HttpRequest {
-	GET = 'GET',
-	POST = 'POST',
-	PUT = 'PUT',
-	PATCH = 'PATCH',
-	DELETE = 'DELETE',
-}
-
-export interface RequestParams {
-	method: HttpRequest;
-	path: string;
-	query?: { [key: string]: string };
-	body?: string;
-	auth?: string;
-}
 
 export const createRequest = async <T = object>(
 	params: RequestParams,
@@ -43,5 +28,7 @@ export const createRequest = async <T = object>(
 	if (!response.ok) return (await response.json()) as ErrorMessage;
 
 	const res = await response.json();
+	console.log(url, opts);
+	console.log(res.data);
 	return res.data as T;
 };

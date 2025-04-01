@@ -1,12 +1,15 @@
-export interface PostTag {
-	id: number;
-	name: string;
-}
+import { z } from 'zod';
 
-export interface Tag {
-	id: number;
-	name: string;
-	created_at: string;
-	updated_at: string;
-	deleted_at: string | null;
-}
+export const tagCoreSchema = z.object({
+	id: z.number(),
+	name: z.string(),
+});
+
+const tagSchema = tagCoreSchema.extend({
+	created_at: z.string().datetime(),
+	updated_at: z.string().datetime(),
+	deleted_at: z.string().datetime().nullable(),
+});
+
+export type TagCore = z.infer<typeof tagCoreSchema>;
+export type Tag = z.infer<typeof tagSchema>;

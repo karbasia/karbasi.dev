@@ -1,21 +1,22 @@
 import type { LayoutServerLoad } from './$types';
 import type { Post } from '$lib/models/post';
-import { createRequest, HttpRequest, type RequestParams } from '$lib/server/api';
+import { createRequest } from '$lib/server/api';
 import { error } from '@sveltejs/kit';
+import { httpRequestEnum, type RequestParams } from '$lib/models/api';
 
 export const load: LayoutServerLoad = async ({ locals }) => {
 	const params: RequestParams = {
-		method: HttpRequest.GET,
+		method: httpRequestEnum.enum.GET,
 		path: '/posts',
 	};
 	if (locals.user) {
 		params.query = { showDeleted: 'true' };
 	}
-	const data = await createRequest<Post[]>(params);
-	if ('error' in data) return error(data.code, data.error);
+	const posts = await createRequest<Post[]>(params);
+	if ('error' in posts) return error(posts.code, posts.error);
 
 	return {
-		posts: data,
+		posts,
 		user: locals.user,
 	};
 };

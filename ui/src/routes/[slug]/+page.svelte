@@ -1,12 +1,12 @@
 <script lang="ts">
-	import hljs from 'highlight.js';
-	import 'highlight.js/styles/github-dark.css';
-	import { onMount } from 'svelte';
+	// import hljs from 'highlight.js';
+	// import 'highlight.js/styles/github-dark.css';
+	// import { onMount } from 'svelte';
 
 	let { data } = $props();
-	onMount(() => {
-		hljs.highlightAll();
-	});
+	// onMount(() => {
+	// 	// hljs.highlightAll();
+	// });
 </script>
 
 <svelte:head>
