@@ -28,7 +28,5 @@ export const createRequest = async <T = object>(
 	if (!response.ok) return (await response.json()) as ErrorMessage;
 
 	const res = await response.json();
-	console.log(url, opts);
-	console.log(res.data);
 	return res.data as T;
 };

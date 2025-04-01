@@ -25,15 +25,15 @@
 			<CardDescription class="flex items-center gap-2">
 				<CalendarIcon class="h-4 w-4" />
 				<span>{formatDate(post.posted_at ?? post.created_at)}</span>
+				<div class="flex flex-wrap gap-2">
+					{#each post.tags as tag}
+						<Badge variant="secondary">{tag.name}</Badge>
+					{/each}
+				</div>
 			</CardDescription>
 		</CardHeader>
 		<CardContent>
-			<p class="text-muted-foreground mb-4">{post.slug}</p>
-			<div class="flex flex-wrap gap-2">
-				{#each post.tags as tag}
-					<Badge variant="secondary">{tag.name}</Badge>
-				{/each}
-			</div>
+			<p class="mb-4">{post.slug}</p>
 		</CardContent>
 	</Card>
 </div>

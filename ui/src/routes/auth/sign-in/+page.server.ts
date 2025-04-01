@@ -1,8 +1,9 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { LoginResult } from '$lib/models/common';
-import { createRequest, HttpRequest, type RequestParams } from '$lib/server/api';
+import { createRequest } from '$lib/server/api';
 import type { Actions } from './$types';
 import { setAuth } from '$lib/server/token';
+import { httpRequestEnum, type RequestParams } from '$lib/models/api';
 
 export const actions = {
 	default: async (event) => {
@@ -11,7 +12,7 @@ export const actions = {
 		const password = data.get('password');
 
 		const params: RequestParams = {
-			method: HttpRequest.POST,
+			method: httpRequestEnum.enum.POST,
 			path: '/auth/login',
 			body: JSON.stringify({ email, password }),
 		};

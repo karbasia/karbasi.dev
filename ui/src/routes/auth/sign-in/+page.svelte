@@ -4,7 +4,7 @@
 	let { form }: PageProps = $props();
 </script>
 
-<div class="flex min-h-screen items-center justify-center">
+<div class="flex min-h-screen w-full items-center justify-center">
 	<div class="dark:bg-surface-700 bg-etch-50 w-full max-w-md rounded-xl p-8 shadow-lg">
 		<h2 class="text-midnight-900 mb-6 text-center text-2xl font-bold">Sign In</h2>
 
