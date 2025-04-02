@@ -1,4 +1,5 @@
 <script lang="ts">
+	import TagSidebar from '$lib/components/layout/TagSidebar.svelte';
 	import PostCard from '$lib/components/post/PostCard.svelte';
 
 	import type { PageProps } from './$types';
@@ -17,3 +18,7 @@
 		{/if}
 	{/each}
 </section>
+
+<aside class="w-64 lg:block">
+	<TagSidebar tags={data.tagPosts} />
+</aside>

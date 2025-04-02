@@ -8,7 +8,7 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			user: UserCore | null;
-			token: string | null;
+			token?: string;
 		}
 		// interface PageData {}
 		// interface PageState {}

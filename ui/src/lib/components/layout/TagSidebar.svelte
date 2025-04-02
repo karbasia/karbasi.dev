@@ -1,16 +1,17 @@
 <script lang="ts">
-	import { Badge } from "$lib/components/ui/badge";
-	import { Card, CardHeader, CardTitle, CardContent } from "$lib/components/ui/card";
-	import { TagIcon } from "lucide-svelte";
+	import { Badge } from '$lib/components/ui/badge';
+	import { Card, CardHeader, CardTitle, CardContent } from '$lib/components/ui/card';
+	import type { Tag } from '$lib/models/tag';
+	import { TagIcon } from 'lucide-svelte';
 
-	type Props = {
-		tagCounts: Record<string, number>;
-	};
-
-	let { tagCounts }: Props = $props();
+	const {
+		tags,
+	}: {
+		tags: Tag[];
+	} = $props();
 </script>
 
-<Card class="sticky top-20">
+<Card class="border-secondary">
 	<CardHeader>
 		<CardTitle class="flex items-center gap-2">
 			<TagIcon class="h-5 w-5" />
@@ -19,12 +20,16 @@
 	</CardHeader>
 	<CardContent>
 		<div class="flex flex-col gap-2">
-			{#each Object.entries(tagCounts) as [tag, count]}
+			{#each tags as tag}
 				<div class="flex items-center justify-between">
-					<Badge variant="outline" class="cursor-pointer hover:bg-secondary">
-						{tag}
-					</Badge>
-					<span class="text-sm text-muted-foreground">{count} posts</span>
+					<a href={`/tags/${tag.name}`}>
+						<Badge variant="outline" class="hover:bg-secondary cursor-pointer">
+							{tag.name}
+						</Badge>
+					</a>
+					<span class="text-muted-foreground text-sm"
+						>{tag.post_count} {tag.post_count! === 1 ? 'post' : 'posts'}</span
+					>
 				</div>
 			{/each}
 		</div>

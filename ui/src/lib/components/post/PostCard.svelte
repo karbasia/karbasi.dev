@@ -11,7 +11,7 @@
 	import type { Post } from '$lib/models/post';
 	import { formatDate } from '$lib/util/date';
 
-	let { post }: { post: Post } = $props();
+	const { post }: { post: Post } = $props();
 </script>
 
 <div class="flex flex-col gap-6">
