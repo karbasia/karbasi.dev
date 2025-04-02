@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { BookOpenIcon, TagIcon, UserCog } from 'lucide-svelte';
+	import { BookOpenIcon, TagIcon } from 'lucide-svelte';
 	import LightSwitch from './LightSwitch.svelte';
 
 	const menuItems = [
 		{ label: 'About', icon: BookOpenIcon, href: '/about' },
 		{ label: 'Projects', icon: TagIcon, href: '/projects' },
-		{ label: 'Admin', icon: UserCog, href: '/admin' },
 	];
 </script>
 
