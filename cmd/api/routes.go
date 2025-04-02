@@ -42,6 +42,7 @@ func (app *application) routes() http.Handler {
 			r.Post("/", app.createTag)
 		})
 		r.Get("/", app.getAllTags)
+		r.Get("/counts", app.getAllTagsWithPostCount)
 		r.Get("/{tag}", app.getAllPostsByTag)
 	})
 

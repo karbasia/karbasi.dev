@@ -24,6 +24,7 @@ type Storage struct {
 		Create(context.Context, *Tag) error
 		Update(context.Context, *Tag) error
 		GetAll(context.Context, bool) ([]Tag, error)
+		GetAllByPostCount(context.Context) ([]Tag, error)
 	}
 }
 

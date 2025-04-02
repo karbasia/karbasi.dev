@@ -17,8 +17,8 @@ import (
 type AuthResponse struct {
 	AccessToken        string          `json:"access_token"`
 	AccessTokenExpiry  string          `json:"access_token_expiry"`
-	RefreshToken       string          `json:"refresh_token"`
-	RefreshTokenExpiry string          `json:"refresh_token_expiry"`
+	RefreshToken       string          `json:"refresh_token,omitempty"`
+	RefreshTokenExpiry string          `json:"refresh_token_expiry,omitempty"`
 	UserInfo           *store.UserCore `json:"user_info"`
 }
 

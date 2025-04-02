@@ -90,3 +90,19 @@ func (app *application) getAllPostsByTag(w http.ResponseWriter, r *http.Request)
 		return
 	}
 }
+
+func (app *application) getAllTagsWithPostCount(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	tags, err := app.store.Tags.GetAllByPostCount(ctx)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	err = response.JSON(w, http.StatusOK, tags)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+}
