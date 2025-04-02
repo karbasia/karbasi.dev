@@ -24,7 +24,7 @@
 					<td class="px-6 py-2 text-left"
 						>{post.deleted_at ? new Date(post.deleted_at).toLocaleDateString() : ''}</td
 					>
-					<td class="px-6 py-2 text-left"><a href={`/${post.slug}`}>Open</a></td>
+					<td class="px-6 py-2 text-left"><a href={`/blog/${post.slug}`}>Open</a></td>
 				</tr>
 			{/each}
 		</tbody>

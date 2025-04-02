@@ -18,7 +18,7 @@
 	<Card class="border-secondary">
 		<CardHeader>
 			<CardTitle>
-				<a href={`/${post.slug}`} class="hover:text-primary">
+				<a href={`/blog/${post.slug}`} class="hover:text-primary">
 					{post.title}
 				</a>
 			</CardTitle>
