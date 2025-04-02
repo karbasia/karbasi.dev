@@ -1,6 +1,7 @@
 <script lang="ts">
-	import PostsGrid from '$lib/components/post/PostsGrid.svelte';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
+	import PostsGrid from '$lib/components/post/PostsGrid.svelte';
+	import TagsGrid from '$lib/components/tag/TagsGrid.svelte';
 
 	const { data } = $props();
 </script>
@@ -14,6 +15,6 @@
 		<PostsGrid posts={data.posts} />
 	</Tabs.Content>
 	<Tabs.Content value="tags">
-		<p>tags</p>
+		<TagsGrid tags={data.tags} />
 	</Tabs.Content>
 </Tabs.Root>
