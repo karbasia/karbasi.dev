@@ -43,6 +43,7 @@
 	},
 	"dependencies": {
 		"ag-grid-community": "^33.2.1",
+		"highlight.js": "^11.11.1",
 		"lucide-svelte": "^0.484.0",
 		"mode-watcher": "^0.5.1",
 		"zod": "^3.24.2"
