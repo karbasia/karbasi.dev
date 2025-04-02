@@ -1,18 +1,21 @@
 <script lang="ts">
-	import hljs from 'highlight.js';
-	import 'highlight.js/styles/github-dark.css';
-	import { onMount } from 'svelte';
+	import { Edra } from '$lib/components/edra/shadcn/index.js';
+	import type { Content, Editor } from '@tiptap/core';
+
+	let editor = $state<Editor>();
 
 	let { data } = $props();
-	onMount(() => {
-		hljs.highlightAll();
-	});
 </script>
 
 <svelte:head>
 	<title>Karbasi.dev | {data.post.title}</title>
 </svelte:head>
 
-<article class="prose dark:prose-invert w-full">
-	{@html data.post.content}
-</article>
+<div class="mx-auto w-full">
+	<Edra
+		class="h-[90vh] w-full overflow-auto"
+		bind:editor
+		content={data.post.content}
+		editable={false}
+	/>
+</div>

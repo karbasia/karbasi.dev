@@ -10,11 +10,9 @@
 </script>
 
 <nav class="bg-background/80 fixed left-0 right-0 top-0 z-50 backdrop-blur-sm">
-	<div class="container mx-auto flex h-16 items-center justify-between px-4">
-		<!-- Blog name -->
+	<div class="mx-auto flex h-16 items-center justify-between px-4">
 		<a href="/" class="text-xl font-bold">karbasi</a>
 
-		<!-- Navigation items -->
 		<ul class="flex items-center gap-2">
 			{#each menuItems as item}
 				<li>
