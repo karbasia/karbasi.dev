@@ -21,7 +21,7 @@ type User struct {
 	HashedPassword string     `json:"-" db:"hashed_password"`
 	CreatedAt      *time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt      *time.Time `json:"updated_at" db:"updated_at"`
-	DeletedAt      *time.Time `json:"deleted_at,omitzero" db:"deleted_at"`
+	DeletedAt      *string    `json:"deleted_at,omitzero" db:"deleted_at"`
 }
 
 type UserStore struct {

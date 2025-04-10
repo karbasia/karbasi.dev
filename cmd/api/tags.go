@@ -3,7 +3,6 @@ package main
 import (
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/karbasia/karbasi.dev/internal/request"
@@ -15,7 +14,7 @@ import (
 type TagInput struct {
 	ID        int                 `json:"id"`
 	Name      string              `json:"name"`
-	DeletedAt time.Time           `json:"deleted_at,omitzero"`
+	DeletedAt *string             `json:"deleted_at,omitzero"`
 	Validator validator.Validator `json:"-"`
 }
 

@@ -3,7 +3,6 @@ package main
 import (
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/karbasia/karbasi.dev/internal/password"
@@ -18,7 +17,7 @@ func (app *application) createUser(w http.ResponseWriter, r *http.Request) {
 		FullName  string              `json:"full_name"`
 		Email     string              `json:"email"`
 		Password  string              `json:"password"`
-		DeletedAt time.Time           `json:"deleted_at,omitzero"`
+		DeletedAt *string             `json:"deleted_at,omitzero"`
 		Validator validator.Validator `json:"-"`
 	}
 

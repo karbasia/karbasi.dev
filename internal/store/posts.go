@@ -18,12 +18,12 @@ type Post struct {
 	Content     string     `json:"content" db:"content"`
 	Active      bool       `json:"active" db:"active"`
 	CreatedByID int        `json:"-" db:"created_by_id"`
-	PostedAt    *time.Time `json:"posted_at,omitzero" db:"posted_at"`
+	PostedAt    *string    `json:"posted_at,omitzero" db:"posted_at"`
 	CreatedBy   UserCore   `json:"created_by"`
 	Tags        []Tag      `json:"tags"`
 	CreatedAt   *time.Time `json:"created_at,omitzero" db:"created_at"`
 	UpdatedAt   *time.Time `json:"updated_at,omitzero" db:"updated_at"`
-	DeletedAt   *time.Time `json:"deleted_at,omitzero" db:"deleted_at"`
+	DeletedAt   *string    `json:"deleted_at,omitzero" db:"deleted_at"`
 }
 
 type PostStore struct {

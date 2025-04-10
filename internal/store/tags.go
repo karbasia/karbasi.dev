@@ -14,7 +14,7 @@ type Tag struct {
 	Name      string     `json:"name" db:"name"`
 	CreatedAt *time.Time `json:"created_at,omitzero" db:"created_at"`
 	UpdatedAt *time.Time `json:"updated_at,omitzero" db:"updated_at"`
-	DeletedAt *time.Time `json:"deleted_at,omitzero" db:"deleted_at"`
+	DeletedAt *string    `json:"deleted_at,omitzero" db:"deleted_at"`
 	PostCount *int       `json:"post_count,omitempty"`
 }
 

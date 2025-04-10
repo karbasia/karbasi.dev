@@ -3,7 +3,6 @@ package main
 import (
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/karbasia/karbasi.dev/internal/request"
@@ -18,8 +17,8 @@ type PostInput struct {
 	Slug      string              `json:"slug"`
 	Content   string              `json:"content"`
 	Active    bool                `json:"active"`
-	PostedAt  *time.Time          `json:"posted_at,omitzero,omitempty"`
-	DeletedAt *time.Time          `json:"deleted_at,omitzero,omitempty"`
+	PostedAt  *string             `json:"posted_at,omitzero,omitempty"`
+	DeletedAt *string             `json:"deleted_at,omitzero,omitempty"`
 	Tags      []store.Tag         `json:"tags"`
 	Validator validator.Validator `json:"-"`
 }
