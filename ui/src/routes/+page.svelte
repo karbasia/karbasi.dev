@@ -19,6 +19,6 @@
 	{/each}
 </section>
 
-<aside class="w-64 lg:block">
+<aside class="ml-4 w-64 lg:block">
 	<TagSidebar tags={data.tagPosts} />
 </aside>

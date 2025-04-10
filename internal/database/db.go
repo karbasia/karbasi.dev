@@ -15,7 +15,7 @@ const DefaultTimeout = 30 * time.Second
 
 func New(dsn string, automigrate bool) (*sql.DB, error) {
 
-	pragmas := "" //"?_fk=1"
+	pragmas := "?_fk=1"
 	db, err := sql.Open("sqlite3", dsn+pragmas)
 	if err != nil {
 		return nil, err

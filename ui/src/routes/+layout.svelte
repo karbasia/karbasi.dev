@@ -11,7 +11,7 @@
 
 <NavBar></NavBar>
 
-<main class="mx-auto flex flex-1 px-4 pt-20">
+<main class=" mx-auto flex flex-1 px-4 pb-14 pt-16">
 	{@render children()}
 </main>
 

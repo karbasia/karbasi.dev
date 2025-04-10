@@ -6,8 +6,6 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { Check, Copy, ChevronDown } from 'lucide-svelte';
 
-	$inspect(editor.isEditable);
-
 	let preRef: HTMLPreElement;
 
 	let isCopying = $state(false);
@@ -64,9 +62,11 @@
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 		{:else}
-			<span class="inline-flex"></span>
+			<span class="text-muted-foreground inline-flex h-4 rounded px-1 pb-2 text-xs">
+				{defaultLanguage}
+			</span>
 		{/if}
-		<Button variant="ghost" class="text-muted-foreground size-4 p-0" onclick={copyCode}>
+		<Button variant="ghost" class="text-muted-foreground size-4 py-0" onclick={copyCode}>
 			{#if isCopying}
 				<Check class="size-3 text-green-500" />
 			{:else}

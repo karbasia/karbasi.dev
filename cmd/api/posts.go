@@ -17,9 +17,9 @@ type PostInput struct {
 	Title     string              `json:"title"`
 	Slug      string              `json:"slug"`
 	Content   string              `json:"content"`
-	Active    int                 `json:"active"`
-	PostedAt  *time.Time          `json:"posted_at,omitzero"`
-	DeletedAt *time.Time          `json:"deleted_at,omitzero"`
+	Active    bool                `json:"active"`
+	PostedAt  *time.Time          `json:"posted_at,omitzero,omitempty"`
+	DeletedAt *time.Time          `json:"deleted_at,omitzero,omitempty"`
 	Tags      []store.Tag         `json:"tags"`
 	Validator validator.Validator `json:"-"`
 }

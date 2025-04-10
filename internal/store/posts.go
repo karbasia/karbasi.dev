@@ -16,7 +16,7 @@ type Post struct {
 	Title       string     `json:"title" db:"title"`
 	Slug        string     `json:"slug" db:"slug"`
 	Content     string     `json:"content" db:"content"`
-	Active      int        `json:"active" db:"active"`
+	Active      bool       `json:"active" db:"active"`
 	CreatedByID int        `json:"-" db:"created_by_id"`
 	PostedAt    *time.Time `json:"posted_at,omitzero" db:"posted_at"`
 	CreatedBy   UserCore   `json:"created_by"`

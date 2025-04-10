@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	if ('error' in post) return error(post.code, post.error);
 
 	// Only the admin can open the deleted posts
-	if ((post.deleted_at || post.active === 0) && !locals.user) {
+	if ((post.deleted_at || !post.active) && !locals.user) {
 		return error(404, 'The requested resource could not be found');
 	}
 	return {

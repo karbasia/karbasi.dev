@@ -1,8 +1,12 @@
-import { createRequest } from '$lib/server/api';
+import { superValidate, fail } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
 import { error } from '@sveltejs/kit';
+
 import type { PageServerLoad, Actions } from './$types';
-import type { Post } from '$lib/models/post';
+import { createRequest } from '$lib/server/api';
+import { type Post, postFormSchema, postSchema } from '$lib/models/post';
 import { httpRequestEnum, type RequestParams } from '$lib/models/api';
+import type { Tag } from '$lib/models/tag';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	if (!locals.user) {
@@ -15,20 +19,41 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const post = await createRequest<Post>(reqParams);
 	if ('error' in post) return error(post.code, post.error);
 
+	reqParams.path = '/tags';
+	const tags = await createRequest<Tag[]>(reqParams);
+	if ('error' in tags) return error(tags.code, tags.error);
+
 	return {
 		post,
+		tags,
+		form: await superValidate(post, zod(postSchema)),
 	};
 };
 
-export const actions = {
+export const actions: Actions = {
 	default: async (event) => {
-		const data = await event.request.formData();
-		const postId = data.get('id');
-
+		const form = await superValidate(event, zod(postFormSchema));
+		if (!form.valid) {
+			return fail(400, {
+				form,
+			});
+		}
+		if (form.data.posted_at) {
+			form.data.posted_at = new Date(form.data.posted_at).toISOString();
+		}
 		const params: RequestParams = {
-			method: httpRequestEnum.enum.POST,
-			path: `/posts/${postId}`,
-			body: JSON.stringify(data),
+			method: httpRequestEnum.enum.PATCH,
+			path: `/posts/${form.data.id}`,
+			body: JSON.stringify(form.data),
+			auth: event.locals.token,
+		};
+		console.log(params);
+		const postData = await createRequest<Post>(params);
+		console.log(postData);
+		if ('error' in postData) return fail(postData.code);
+		form.data = postData;
+		return {
+			form,
 		};
 	},
-} satisfies Actions;
+};
