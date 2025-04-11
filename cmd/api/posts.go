@@ -108,6 +108,14 @@ func (app *application) updatePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
+
+	// Verify the tags and create them if they do not exist
+	for i := 0; i < len(input.Tags); i++ {
+		if input.Tags[i].ID == 0 {
+			app.store.Tags.Create(ctx, &input.Tags[i])
+		}
+	}
+
 	post := &store.Post{
 		ID:        postID,
 		Title:     input.Title,
