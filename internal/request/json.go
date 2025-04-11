@@ -18,7 +18,7 @@ func DecodeJSONStrict(w http.ResponseWriter, r *http.Request, dst interface{}) e
 }
 
 func decodeJSON(w http.ResponseWriter, r *http.Request, dst interface{}, disallowUnknownFields bool) error {
-	maxBytes := 1_048_576
+	maxBytes := 15_000_000
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
 
 	dec := json.NewDecoder(r.Body)
