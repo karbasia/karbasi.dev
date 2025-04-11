@@ -16,12 +16,12 @@
 		<ul class="flex items-center gap-2">
 			{#each menuItems as item}
 				<li>
-					<Button variant="ghost" size="sm">
-						<a href={item.href} class="flex items-center gap-2">
+					<a href={item.href} class="flex items-center gap-2">
+						<Button variant="ghost" size="sm">
 							<svelte:component this={item.icon} class="h-4 w-4" />
 							<span class="hidden sm:inline">{item.label}</span>
-						</a>
-					</Button>
+						</Button>
+					</a>
 				</li>
 			{/each}
 			<li><LightSwitch /></li>

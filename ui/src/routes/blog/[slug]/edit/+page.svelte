@@ -78,7 +78,7 @@
 		<Form.Field
 			{form}
 			name="active"
-			class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
+			class="border-input flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
 		>
 			<Form.Control>
 				{#snippet children({ props })}
@@ -90,7 +90,7 @@
 			</Form.Control>
 		</Form.Field>
 		<Form.Fieldset {form} name="tags" class="space-y-0">
-			<div class="mb-4">
+			<div class="mt-4">
 				<Form.Legend class="text-base">Tags</Form.Legend>
 			</div>
 			<div class="space-y-2">
