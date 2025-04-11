@@ -5,6 +5,7 @@
 		CardTitle,
 		CardDescription,
 		CardContent,
+		CardFooter,
 	} from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { CalendarIcon } from 'lucide-svelte';
@@ -27,7 +28,7 @@
 				<span>{formatDate(post.posted_at ?? post.created_at)}</span>
 				<div class="flex flex-wrap gap-2">
 					{#each post.tags as tag}
-						<Badge variant="secondary">{tag.name}</Badge>
+						<a href={`/tags/${tag.name}`}><Badge variant="outline">{tag.name}</Badge></a>
 					{/each}
 				</div>
 			</CardDescription>
@@ -35,5 +36,9 @@
 		<CardContent>
 			<p class="mb-4">{post.slug}</p>
 		</CardContent>
+		<CardFooter
+			><a class="hover:text-primary text-sm font-bold" href={`/blog/${post.slug}`}>Read more...</a
+			></CardFooter
+		>
 	</Card>
 </div>
