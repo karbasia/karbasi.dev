@@ -13,7 +13,7 @@
 
 <section class="flex-1">
 	{#each data.posts as post}
-		{#if !post.deleted_at && post.active === 1}
+		{#if !post.deleted_at && post.active}
 			<PostCard {post}></PostCard>
 		{/if}
 	{/each}

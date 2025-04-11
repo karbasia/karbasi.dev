@@ -7,9 +7,9 @@ export const tagCoreSchema = z.object({
 
 const tagSchema = tagCoreSchema.extend({
 	post_count: z.number().optional(),
-	created_at: z.string().datetime(),
-	updated_at: z.string().datetime(),
-	deleted_at: z.string().datetime().nullable(),
+	created_at: z.string(),
+	updated_at: z.string(),
+	deleted_at: z.string().nullable(),
 });
 
 export type TagCore = z.infer<typeof tagCoreSchema>;

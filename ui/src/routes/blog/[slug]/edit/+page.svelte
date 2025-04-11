@@ -3,9 +3,9 @@
 	import { Input } from '$lib/components/ui/input';
 	import type { Editor } from '@tiptap/core';
 	import type { Transaction } from '@tiptap/pm/state';
-	import { Edra, EdraToolbar, EdraBubbleMenu } from '$lib/components/edra/shadcn';
+	import { Edra, EdraToolbar } from '$lib/components/edra/shadcn';
 	import DragHandle from '$lib/components/edra/drag-handle.svelte';
-	import SuperDebug, { superForm } from 'sveltekit-superforms';
+	import { superForm } from 'sveltekit-superforms';
 	import { postFormSchema } from '$lib/models/post';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { Checkbox } from '$lib/components/ui/checkbox';
@@ -27,8 +27,6 @@
 	let showToolBar = $state(true);
 	let tags = $derived($formData.tags);
 
-	$inspect($formData.posted_at);
-
 	const onUpdate = (props: { editor: Editor; transaction: Transaction }) => {
 		$formData.content = props.editor.getHTML();
 	};
@@ -49,7 +47,6 @@
 </svelte:head>
 
 <div class="mx-auto w-full">
-	<SuperDebug data={$formData} />
 	<form method="POST" use:enhance>
 		<Form.Field {form} name="title">
 			<Form.Control>
@@ -102,7 +99,11 @@
 						<Form.Control>
 							{#snippet children({ props })}
 								<Form.Label class="hidden">{$formData.tags[i].name}</Form.Label>
-								<Input {...props} bind:value={$formData.tags[i].name} />
+								<Input
+									{...props}
+									bind:value={$formData.tags[i].name}
+									readonly={!!$formData.tags[i].id}
+								/>
 								<Button variant="destructive" class="ml-2" onclick={() => removeTag(i)}
 									><Trash /></Button
 								>
@@ -119,7 +120,6 @@
 				<div class="overflow-auto rounded-t border-x border-t p-1">
 					<EdraToolbar {editor} />
 				</div>
-				<EdraBubbleMenu {editor} />
 				<DragHandle {editor} />
 			{/if}
 			<div class="rounded-b border">

@@ -38,18 +38,13 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		if (form.data.posted_at) {
-			form.data.posted_at = new Date(form.data.posted_at).toISOString();
-		}
 		const params: RequestParams = {
 			method: httpRequestEnum.enum.PATCH,
 			path: `/posts/${form.data.id}`,
 			body: JSON.stringify(form.data),
 			auth: event.locals.token,
 		};
-		console.log(params);
 		const postData = await createRequest<Post>(params);
-		console.log(postData);
 		if ('error' in postData) return fail(postData.code);
 		form.data = postData;
 		return {

@@ -24,7 +24,7 @@
 			},
 			{
 				headerName: 'Active?',
-				valueGetter: (r) => r.data?.active === 1,
+				valueGetter: (r) => r.data?.active,
 				cellDataType: 'boolean',
 				maxWidth: 100,
 			},
