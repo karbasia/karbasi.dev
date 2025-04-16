@@ -67,15 +67,15 @@ run/live:
 ## migrations/up: apply all up database migrations
 .PHONY: migrations/up
 migrations/up:
-	@goose sqlite3 ./db.sqlite -path=./assets/migrations up
+	@goose sqlite3 ./db.sqlite -dir=./assets/migrations up
 
 ## migrations/down: apply all down database migrations
 .PHONY: migrations/down
 migrations/down:
-	@goose sqlite3 ./db.sqlite -path=./assets/migrations down
+	@goose sqlite3 ./db.sqlite -dir=./assets/migrations down
 
 ## migrations/version: print the current in-use migration version
 .PHONY: migrations/version
 migrations/version:
-	@goose sqlite3 ./db.sqlite -path=./assets/migrations version
+	@goose sqlite3 ./db.sqlite -dir=./assets/migrations version
 
