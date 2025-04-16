@@ -26,6 +26,12 @@ type Storage struct {
 		GetAll(context.Context, bool) ([]Tag, error)
 		GetAllByPostCount(context.Context) ([]Tag, error)
 	}
+	Files interface {
+		Create(context.Context, *File) error
+		GetAll(context.Context) ([]File, error)
+		GetByID(context.Context, int) (*File, bool, error)
+		GetByName(context.Context, string) (*File, bool, error)
+	}
 }
 
 func New(db *sql.DB) Storage {
@@ -33,5 +39,6 @@ func New(db *sql.DB) Storage {
 		Posts: &PostStore{db},
 		Users: &UserStore{db},
 		Tags:  &TagStore{db},
+		Files: &FileStore{db},
 	}
 }

@@ -46,6 +46,15 @@ func (app *application) routes() http.Handler {
 		r.Get("/{tag}", app.getAllPostsByTag)
 	})
 
+	r.Route("/files", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			r.Use(app.requireAuthenticatedUser)
+			r.Get("/", app.getAllFiles)
+			r.Post("/", app.createFile)
+		})
+		r.Get("/{name}", app.getFileByName)
+	})
+
 	r.Route("/auth", func(r chi.Router) {
 		r.Post("/login", app.handleLogin)
 		r.Post("/refresh", app.handleRefresh)
