@@ -1,4 +1,4 @@
-import { API_URL } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import type { RequestParams } from '$lib/models/api';
 import type { ErrorMessage } from '$lib/models/common';
 
@@ -8,7 +8,7 @@ export const createRequest = async <T = object>(
 	const opts: RequestInit = {};
 	let headers: HeadersInit = {};
 
-	const url = new URL(`${API_URL}${params.path}`);
+	const url = new URL(`${env.API_URL}${params.path}`);
 	if (params.query) {
 		Object.entries(params.query).map((v, _) => url.searchParams.append(v[0], v[1]));
 	}
@@ -38,7 +38,7 @@ export const createRawRequest = async (params: RequestParams): Promise<Response 
 	const opts: RequestInit = {};
 	let headers: HeadersInit = {};
 
-	const url = new URL(`${API_URL}${params.path}`);
+	const url = new URL(`${env.API_URL}${params.path}`);
 	if (params.query) {
 		Object.entries(params.query).map((v, _) => url.searchParams.append(v[0], v[1]));
 	}
