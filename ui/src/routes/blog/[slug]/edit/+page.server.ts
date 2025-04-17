@@ -41,7 +41,7 @@ export const actions: Actions = {
 		const params: RequestParams = {
 			method: httpRequestEnum.enum.PATCH,
 			path: `/posts/${form.data.id}`,
-			body: JSON.stringify(form.data),
+			body: form.data,
 			auth: event.locals.token,
 		};
 		const postData = await createRequest<Post>(params);

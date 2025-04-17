@@ -20,7 +20,7 @@ const verifyLoggedInUser: Handle = async ({ event, resolve }) => {
 			const params: RequestParams = {
 				method: httpRequestEnum.enum.POST,
 				path: '/auth/refresh',
-				body: JSON.stringify({ refresh_token: refreshToken }),
+				body: { refresh_token: refreshToken },
 			};
 			const res = await createRequest<RefreshTokenResult>(params);
 			if ('error' in res) {

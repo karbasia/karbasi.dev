@@ -14,7 +14,7 @@ export const actions = {
 		const params: RequestParams = {
 			method: httpRequestEnum.enum.POST,
 			path: '/auth/login',
-			body: JSON.stringify({ email, password }),
+			body: { email, password },
 		};
 
 		const loginResponse = await createRequest<LoginResult>(params);
