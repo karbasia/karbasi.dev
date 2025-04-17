@@ -1,8 +1,3 @@
-{
-  # Set the ACME DNS challenge provider to use Cloudflare for all sites
-  dns cloudflare {env.CF_API_TOKEN}
-}
-
 karbasi.dev {
 
     # Set this path to your site's directory.
@@ -12,7 +7,7 @@ karbasi.dev {
     # file_server
 
     # Another common task is to set up a reverse proxy:
-    reverse_proxy localhost:3000
+    reverse_proxy ui:3000
 
     # Or serve a PHP site through php-fpm:
     # php_fastcgi localhost:9000
@@ -20,6 +15,6 @@ karbasi.dev {
     encode gzip
 
     tls {
-      # No need to specify dns here, it's already set globally
+        dns cloudflare {env.CF_API_TOKEN}
     }
 }
