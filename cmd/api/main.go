@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/karbasia/karbasi.dev/internal/database"
+	"github.com/karbasia/karbasi.dev/internal/env"
 	"github.com/karbasia/karbasi.dev/internal/store"
 	"github.com/karbasia/karbasi.dev/internal/version"
 )
@@ -47,12 +48,12 @@ type application struct {
 func run(logger *slog.Logger) error {
 	var cfg config
 
-	flag.StringVar(&cfg.baseURL, "base-url", "http://localhost:8080", "base URL for the application")
-	flag.IntVar(&cfg.httpPort, "http-port", 8080, "port to listen on for HTTP requests")
-	flag.StringVar(&cfg.db.dsn, "db-dsn", "db.sqlite", "sqlite3 DSN")
-	flag.BoolVar(&cfg.db.automigrate, "db-automigrate", true, "run migrations on startup")
-	flag.StringVar(&cfg.jwt.accessSecretKey, "jwt-access-secret-key", "vyiwjr425wpr277oxf34tcmg73mmkcks", "secret key for access JWT")
-	flag.StringVar(&cfg.jwt.refreshSecretKey, "jwt-refresh-secret-key", "tqAp56ce2i2XmpoAsubxkgV0ThBYYFBV", "secret key for refresh JWT")
+	cfg.baseURL = env.GetString("BASE_URL", "http://localhost:8080")
+	cfg.httpPort = env.GetInt("HTTP_PORT", 8080)
+	cfg.db.dsn = env.GetString("DB_DSN", "db.sqlite")
+	cfg.db.automigrate = env.GetBool("DB_AUTOMIGRATE", true)
+	cfg.jwt.accessSecretKey = env.GetString("JWT_ACCESS_SECRET", "vyiwjr425wpr277oxf34tcmg73mmkcks")
+	cfg.jwt.refreshSecretKey = env.GetString("JWT_REFRESH_SECRET", "tqAp56ce2i2XmpoAsubxkgV0ThBYYFBV")
 
 	showVersion := flag.Bool("version", false, "display version and exit")
 
