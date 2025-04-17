@@ -1,0 +1,28 @@
+services:
+  caddy:
+    container_name: caddy
+    build: ./
+    env_file:
+      - .env
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    network_mode: host
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - $PWD/conf:/etc/caddy
+      - $PWD/site:/srv
+      - caddy_data:/data
+      - caddy_config:/config
+  ui:
+    container_name: ui
+    build: ./ui
+    env_file:
+      - .env
+    restart: unless-stopped
+volumes:
+  caddy_data:
+  caddy_config:
