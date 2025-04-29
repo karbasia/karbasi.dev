@@ -66,6 +66,15 @@
 			</Form.Control>
 			<Form.FieldErrors />
 		</Form.Field>
+		<Form.Field {form} name="headline">
+			<Form.Control>
+				{#snippet children({ props })}
+					<Form.Label>Headline</Form.Label>
+					<Input {...props} bind:value={$formData.headline} />
+				{/snippet}
+			</Form.Control>
+			<Form.FieldErrors />
+		</Form.Field>
 		<Form.Field {form} name="posted_at">
 			<Form.Control>
 				{#snippet children({ props })}

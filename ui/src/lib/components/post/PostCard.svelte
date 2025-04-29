@@ -34,7 +34,7 @@
 			</CardDescription>
 		</CardHeader>
 		<CardContent>
-			<p class="mb-4">{post.slug}</p>
+			<p class="mb-4">{post.headline ?? ''}</p>
 		</CardContent>
 		<CardFooter
 			><a class="hover:text-primary text-sm font-bold" href={`/blog/${post.slug}`}>Read more...</a

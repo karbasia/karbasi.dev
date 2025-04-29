@@ -4,6 +4,7 @@ CREATE TABLE
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
         slug TEXT NOT NULL UNIQUE,
+        headline TEXT NOT NULL,
         content TEXT NOT NULL,
         active INTEGER NOT NULL DEFAULT 0,
         created_by_id INTEGER NOT NULL REFERENCES users (id),

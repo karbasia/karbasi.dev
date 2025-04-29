@@ -6,6 +6,7 @@ export const postSchema = z.object({
 	id: z.number(),
 	title: z.string(),
 	slug: z.string(),
+	headline: z.string().optional(),
 	content: z.string().optional(),
 	active: z.boolean(),
 	posted_at: z.string().nullable().optional(),

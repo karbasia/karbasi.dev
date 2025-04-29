@@ -15,6 +15,7 @@ type Post struct {
 	ID          int        `json:"id" db:"id"`
 	Title       string     `json:"title" db:"title"`
 	Slug        string     `json:"slug" db:"slug"`
+	Headline    string     `json:"headline" db:"headline`
 	Content     string     `json:"content" db:"content"`
 	Active      bool       `json:"active" db:"active"`
 	CreatedByID int        `json:"-" db:"created_by_id"`
@@ -39,8 +40,8 @@ func (s *PostStore) Create(ctx context.Context, post *Post) error {
 	defer tx.Rollback()
 
 	query := `
-		INSERT INTO posts (title, slug, content, active, created_by_id, posted_at)
-		VALUES ($1, $2, $3, $4, $5, $6) 
+		INSERT INTO posts (title, slug, headline, content, active, created_by_id, posted_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7) 
 		RETURNING id, created_at, updated_at
 	`
 
@@ -52,6 +53,7 @@ func (s *PostStore) Create(ctx context.Context, post *Post) error {
 		query,
 		post.Title,
 		post.Slug,
+		post.Headline,
 		post.Content,
 		post.Active,
 		post.CreatedByID,
@@ -87,9 +89,9 @@ func (s *PostStore) Update(ctx context.Context, post *Post) error {
 	defer tx.Rollback()
 
 	query := `
-		UPDATE posts SET (title, slug, content, active, posted_at, deleted_at) =
-		($1, $2, $3, $4, $5, $6)
-		WHERE id = $7
+		UPDATE posts SET (title, slug, headline, content, active, posted_at, deleted_at) =
+		($1, $2, $3, $4, $5, $6, $7)
+		WHERE id = $8
 		RETURNING created_at, updated_at;
 	`
 
@@ -101,6 +103,7 @@ func (s *PostStore) Update(ctx context.Context, post *Post) error {
 		query,
 		post.Title,
 		post.Slug,
+		post.Headline,
 		post.Content,
 		post.Active,
 		post.PostedAt,
@@ -134,7 +137,7 @@ func (s *PostStore) Update(ctx context.Context, post *Post) error {
 
 func (s *PostStore) GetBySlug(ctx context.Context, slug string) (*Post, bool, error) {
 	query := `
-		SELECT p.id, p.title, p.slug, p.content, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, p.deleted_at, 
+		SELECT p.id, p.title, p.slug, p.headline, p.content, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, p.deleted_at, 
 			u.id, u.full_name,
 			json_group_array(
 				json_object('id', t.id, 'name', t.name)
@@ -159,6 +162,7 @@ func (s *PostStore) GetBySlug(ctx context.Context, slug string) (*Post, bool, er
 		&post.ID,
 		&post.Title,
 		&post.Slug,
+		&post.Headline,
 		&post.Content,
 		&post.Active,
 		&post.CreatedByID,
@@ -185,7 +189,7 @@ func (s *PostStore) GetBySlug(ctx context.Context, slug string) (*Post, bool, er
 
 func (s *PostStore) GetAllByTag(ctx context.Context, tagName string) ([]Post, error) {
 	query := `
-		SELECT p.id, p.title, p.slug, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, u.id, u.full_name,
+		SELECT p.id, p.title, p.slug, p.headline, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, u.id, u.full_name,
 			json_group_array(
 				json_object('id', t.id, 'name', t.name)
 			) filter (
@@ -220,6 +224,7 @@ func (s *PostStore) GetAllByTag(ctx context.Context, tagName string) ([]Post, er
 			&p.ID,
 			&p.Title,
 			&p.Slug,
+			&p.Headline,
 			&p.Active,
 			&p.CreatedByID,
 			&p.PostedAt,
@@ -247,7 +252,7 @@ func (s *PostStore) GetAll(ctx context.Context, showDeleted bool) ([]Post, error
 		filterParam = "WHERE p.deleted_at IS NULL"
 	}
 	query := fmt.Sprintf(`
-		SELECT p.id, p.title, p.slug, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, u.id, u.full_name, p.deleted_at,
+		SELECT p.id, p.title, p.slug, p.headline, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, u.id, u.full_name, p.deleted_at,
 			json_group_array(
 				json_object('id', t.id, 'name', t.name)
 			) filter (
@@ -280,6 +285,7 @@ func (s *PostStore) GetAll(ctx context.Context, showDeleted bool) ([]Post, error
 			&p.ID,
 			&p.Title,
 			&p.Slug,
+			&p.Headline,
 			&p.Active,
 			&p.CreatedByID,
 			&p.PostedAt,

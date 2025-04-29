@@ -15,6 +15,7 @@ type PostInput struct {
 	ID        int                 `json:"-"`
 	Title     string              `json:"title"`
 	Slug      string              `json:"slug"`
+	Headline  string              `json:"headline"`
 	Content   string              `json:"content"`
 	Active    bool                `json:"active"`
 	PostedAt  *string             `json:"posted_at,omitzero,omitempty"`
@@ -71,6 +72,7 @@ func (app *application) createPost(w http.ResponseWriter, r *http.Request) {
 	post := &store.Post{
 		Title:       input.Title,
 		Slug:        input.Slug,
+		Headline:    input.Headline,
 		Content:     input.Content,
 		Active:      input.Active,
 		PostedAt:    input.PostedAt,
@@ -120,6 +122,7 @@ func (app *application) updatePost(w http.ResponseWriter, r *http.Request) {
 		ID:        postID,
 		Title:     input.Title,
 		Slug:      input.Slug,
+		Headline:  input.Headline,
 		Content:   input.Content,
 		Active:    input.Active,
 		PostedAt:  input.PostedAt,
