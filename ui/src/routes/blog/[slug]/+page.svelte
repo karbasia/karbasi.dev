@@ -1,18 +1,15 @@
 <script lang="ts">
 	import mermaid from 'mermaid';
-	import { mode } from 'mode-watcher';
 	import { Button } from '$lib/components/ui/button';
 	import { onMount } from 'svelte';
-
+	import hljs from 'highlight.js';
 	let { data } = $props();
 
 	onMount(() => {
 		if (data.post.content) {
 			if (data.post.content.indexOf('</pre>') > 0) {
-				// @ts-ignore
-				Prism.highlightAll();
+				hljs.highlightAll();
 			}
-			console.log(data.post.content);
 			if (data.post.content.indexOf('class="language-mermaid"') > 0) {
 				mermaid.initialize({
 					startOnLoad: false,
