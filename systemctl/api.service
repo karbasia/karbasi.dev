@@ -1,0 +1,8 @@
+[Unit]
+Description=Blog API - karbasi.dev
+
+[Service]
+ExecStart=/path/to/compiled/api
+
+[Install]
+WantedBy=multi-user.target
