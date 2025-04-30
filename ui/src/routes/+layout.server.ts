@@ -3,7 +3,7 @@ import type { Post } from '$lib/models/post';
 import { createRequest } from '$lib/server/api';
 import { error } from '@sveltejs/kit';
 import { httpRequestEnum, type RequestParams } from '$lib/models/api';
-import type { Tag } from 'lucide-svelte';
+import type { Tag } from '$lib/models/tag';
 
 export const load: LayoutServerLoad = async ({ locals }) => {
 	const postParams: RequestParams = {

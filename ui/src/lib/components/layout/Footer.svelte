@@ -16,7 +16,7 @@
 			<a href="/admin" class="text-muted-foreground hover:text-foreground text-sm"> <UserCog /> </a>
 			<div class="flex flex-1 flex-row justify-center">
 				<p class="text-muted-foreground text-sm">
-					© {currentYear} Amir Karbasi. All opinions are my own.
+					© {currentYear} Amir Karbasi. Powered by recycled hardware from the basement
 				</p>
 			</div>
 
