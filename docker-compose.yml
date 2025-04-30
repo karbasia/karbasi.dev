@@ -4,13 +4,11 @@ services:
     build: ./
     env_file:
       - .env
-    restart: unless-stopped
+    restart: always
     cap_add:
       - NET_ADMIN
     ports:
       - "80:80"
-      - "443:443"
-      - "443:443/udp"
     volumes:
       - $PWD/conf:/etc/caddy
       - $PWD/site:/srv
@@ -21,7 +19,9 @@ services:
     build: ./ui
     env_file:
       - .env
-    restart: unless-stopped
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 volumes:
   caddy_data:
   caddy_config:
