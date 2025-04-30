@@ -1,11 +1,29 @@
 <script lang="ts">
-	import { Edra } from '$lib/components/edra/shadcn/index.js';
+	import mermaid from 'mermaid';
+	import { mode } from 'mode-watcher';
 	import { Button } from '$lib/components/ui/button';
-	import type { Editor } from '@tiptap/core';
-
-	let editor = $state<Editor>();
+	import { onMount } from 'svelte';
 
 	let { data } = $props();
+
+	onMount(() => {
+		if (data.post.content) {
+			if (data.post.content.indexOf('</pre>') > 0) {
+				// @ts-ignore
+				Prism.highlightAll();
+			}
+			console.log(data.post.content);
+			if (data.post.content.indexOf('class="language-mermaid"') > 0) {
+				mermaid.initialize({
+					startOnLoad: false,
+					theme: 'neutral',
+				});
+				mermaid.run({
+					querySelector: 'code.language-mermaid',
+				});
+			}
+		}
+	});
 </script>
 
 <svelte:head>
@@ -18,10 +36,5 @@
 			><a href={`/blog/${data.post.slug}/edit`}><Button variant="outline">Edit</Button></a></span
 		>
 	{/if}
-	<Edra
-		class="h-[90vh] w-full overflow-auto"
-		bind:editor
-		content={data.post.content}
-		editable={false}
-	/>
+	{@html data.post.content}
 </div>

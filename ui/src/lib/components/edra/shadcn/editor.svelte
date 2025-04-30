@@ -10,7 +10,7 @@
 	import 'katex/dist/katex.min.css';
 	import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 	import CodeExtended from './components/CodeExtended.svelte';
-	import { all, createLowlight } from 'lowlight';
+	import { common, createLowlight } from 'lowlight';
 	import { SvelteNodeViewRenderer } from 'svelte-tiptap';
 	import { ImagePlaceholder } from '../extensions/image/ImagePlaceholder.js';
 	import ImagePlaceholderComponent from './components/ImagePlaceholder.svelte';
@@ -36,8 +36,10 @@
 	import IFramePlaceholderComponent from './components/IFramePlaceholder.svelte';
 	import { IFrameExtended } from '../extensions/iframe/IFrameExtended.js';
 	import IFrameExtendedComponent from './components/IFrameExtended.svelte';
+	import yaml from 'highlight.js/lib/languages/yaml';
 
-	const lowlight = createLowlight(all);
+	const lowlight = createLowlight(common);
+	lowlight.register('mermaid', yaml);
 
 	let {
 		class: className = '',

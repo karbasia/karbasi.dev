@@ -15,7 +15,7 @@
 	const { post }: { post: Post } = $props();
 </script>
 
-<div class="flex flex-col gap-6">
+<div class="mb-2 flex flex-col gap-6">
 	<Card class="border-secondary">
 		<CardHeader>
 			<CardTitle>
