@@ -98,7 +98,14 @@
 		--highlightjs-base0D: #82aaff; /* Functions, Methods */
 		--highlightjs-base0E: #c792ea; /* Keywords, Selectors */
 		--highlightjs-base0F: #ff5370; /* Deprecated, Embedded Tags */
+		.language-mermaid {
+			filter: invert(0.88);
+		}
 	}
+}
+
+.prose pre:has(> code.language-mermaid) {
+	background-color: var(--background);
 }
 
 @layer base {
