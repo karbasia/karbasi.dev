@@ -1,11 +1,18 @@
 <script lang="ts">
-	import mermaid from 'mermaid';
-	import { Button } from '$lib/components/ui/button';
+	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import hljs from 'highlight.js';
+	import mermaid from 'mermaid';
+	import { Button } from '$lib/components/ui/button';
+
 	let { data } = $props();
 
+	let darkMode = $state(true);
+
 	onMount(() => {
+		if (browser) {
+			darkMode = document.documentElement.classList.contains('dark');
+		}
 		if (data.post.content) {
 			if (data.post.content.indexOf('</pre>') > 0) {
 				hljs.highlightAll();
@@ -33,5 +40,7 @@
 			><a href={`/blog/${data.post.slug}/edit`}><Button variant="outline">Edit</Button></a></span
 		>
 	{/if}
-	{@html data.post.content}
+	<article class="prose dark:prose-invert h-full min-w-full cursor-auto *:outline-none">
+		{@html data.post.content}
+	</article>
 </div>
