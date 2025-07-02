@@ -1,0 +1,4 @@
+:80 {
+    # Another common task is to set up a reverse proxy:
+    reverse_proxy ui:3000
+}
