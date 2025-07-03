@@ -2,6 +2,8 @@
 Description=Blog API - karbasi.dev
 
 [Service]
+User=yourusername
+WorkingDirectory=/path/to/compiled
 ExecStart=/path/to/compiled/api
 
 [Install]

@@ -1,0 +1,10 @@
+[Unit]
+Description=Blog UI - karbasi.dev
+
+[Service]
+User=yourusername
+WorkingDirectory=/path/to/ui/folder
+ExecStart=~/.nvm/nvm-exec node build
+
+[Install]
+WantedBy=multi-user.target
