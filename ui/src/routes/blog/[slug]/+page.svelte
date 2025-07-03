@@ -4,6 +4,8 @@
 	import hljs from 'highlight.js';
 	import mermaid from 'mermaid';
 	import { Button } from '$lib/components/ui/button';
+	import { Badge } from '$lib/components/ui/badge';
+	import { formatDate } from '$lib/util/date';
 
 	let { data } = $props();
 
@@ -35,12 +37,21 @@
 </svelte:head>
 
 <div class="mx-auto w-full">
+	<div class="mb-2 text-center text-3xl">{data.post.title}</div>
+	<div class="mb-4 flex flex-row items-center justify-center border-b border-secondary pb-2">
+		<span class="mr-2">{formatDate(data.post.posted_at ?? data.post.created_at)}</span>
+		<div class="flex flex-wrap gap-2">
+			{#each data.post.tags as tag}
+				<a href={`/tags/${tag.name}`}><Badge variant="outline">{tag.name}</Badge></a>
+			{/each}
+		</div>
+	</div>
 	{#if data.user}
 		<span class="mb-4 flex"
 			><a href={`/blog/${data.post.slug}/edit`}><Button variant="outline">Edit</Button></a></span
 		>
 	{/if}
-	<article class="prose dark:prose-invert h-full min-w-full cursor-auto *:outline-none">
+	<article class="prose h-full min-w-full cursor-auto dark:prose-invert *:outline-none">
 		{@html data.post.content}
 	</article>
 </div>
