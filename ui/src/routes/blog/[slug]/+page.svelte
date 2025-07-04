@@ -38,9 +38,9 @@
 
 <div class="mx-auto w-full">
 	<div class="mb-2 text-center text-3xl">{data.post.title}</div>
-	<div class="mb-4 flex flex-row items-center justify-center border-b border-secondary pb-2">
-		<span class="mr-2">{formatDate(data.post.posted_at ?? data.post.created_at)}</span>
-		<div class="flex flex-wrap gap-2">
+	<div class="mb-4 flex flex-col items-center justify-center border-b border-secondary pb-2">
+		<span class="mb-2 text-center">{formatDate(data.post.posted_at ?? data.post.created_at)}</span>
+		<div class="flex flex-wrap justify-center gap-2">
 			{#each data.post.tags as tag}
 				<a href={`/tags/${tag.name}`}><Badge variant="outline">{tag.name}</Badge></a>
 			{/each}

@@ -9,14 +9,14 @@
 	];
 </script>
 
-<footer class="fixed bottom-0 left-0 right-0 backdrop-blur-sm">
+<footer class="bottom-0 left-0 right-0 backdrop-blur-sm sm:fixed">
 	<div class="container mx-auto px-4 py-4">
 		<div class="flex flex-row">
 			<!-- Copyright and links -->
-			<a href="/admin" class="text-muted-foreground hover:text-foreground text-sm"> <UserCog /> </a>
+			<a href="/admin" class="text-sm text-muted-foreground hover:text-foreground"> <UserCog /> </a>
 			<div class="flex flex-1 flex-row justify-center">
-				<p class="text-muted-foreground text-sm">
-					© {currentYear} Amir Karbasi. Powered by recycled hardware from the basement
+				<p class="text-sm text-muted-foreground">
+					© {currentYear} Amir Karbasi.
 				</p>
 			</div>
 
