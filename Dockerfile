@@ -11,7 +11,7 @@ RUN go mod download
 COPY . .
 
 # Build the API binary
-RUN CGO_ENABLED=0 GOOS=linux go build -o api ./cmd/api
+RUN CGO_ENABLED=1 GOOS=linux go build -o api ./cmd/api
 
 # Final stage
 FROM alpine:3.22.0
