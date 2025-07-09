@@ -1,5 +1,7 @@
 # Build stage
-FROM golang:1.24.4 as builder
+FROM golang:1.24.4-alpine3.22 as builder
+
+RUN apk add --no-cache gcc musl-dev
 
 WORKDIR /app
 
@@ -18,11 +20,14 @@ FROM alpine:3.22.0
 
 WORKDIR /app
 
+# Create goapi user and group
+RUN addgroup -S goapi && adduser -S goapi -G goapi
+
+USER goapi
+
 # Copy the built binary from builder
 COPY --from=builder /app/api /app/api
 
 EXPOSE 8080
-
-USER goapi:goapi
 
 ENTRYPOINT ["/app/api"]
