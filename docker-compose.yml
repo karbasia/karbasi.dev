@@ -19,7 +19,7 @@ services:
     build: .
     restart: always
     volumes:
-      - ./:/app
+      - ./db.sqlite:/app/db.sqlite
   ui:
     container_name: ui
     image: ghcr.io/karbasia/blog-ui:latest
