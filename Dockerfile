@@ -1,8 +1,28 @@
-FROM caddy:2.9.1-builder-alpine AS builder
+# Build stage
+FROM golang:1.24.4 as builder
 
-RUN xcaddy build \
-    --with github.com/caddy-dns/cloudflare
+WORKDIR /app
 
-FROM caddy:2.9.1-alpine
+# Copy go mod and sum files
+COPY go.mod go.sum ./
+RUN go mod download
 
-COPY --from=builder /usr/bin/caddy /usr/bin/caddy
+# Copy the source code
+COPY . .
+
+# Build the API binary
+RUN CGO_ENABLED=0 GOOS=linux go build -o api ./cmd/api
+
+# Final stage
+FROM alpine:3.22.0
+
+WORKDIR /app
+
+# Copy the built binary from builder
+COPY --from=builder /app/api /app/api
+
+EXPOSE 8080
+
+USER goapi:goapi
+
+ENTRYPOINT ["/app/api"]
