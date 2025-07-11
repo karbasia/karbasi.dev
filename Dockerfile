@@ -21,6 +21,10 @@ WORKDIR /app
 # Create goapi user and group
 RUN addgroup -S goapi && adduser -S goapi -G goapi
 
+RUN mkdir /data
+RUN chown goapi:goapi /data
+VOLUME /data
+
 USER goapi
 
 # Copy the built binary from builder

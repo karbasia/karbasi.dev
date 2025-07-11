@@ -21,7 +21,7 @@ services:
     image: ghcr.io/karbasia/blog-api:latest
     restart: always
     volumes:
-      - ./db.sqlite:/app/db.sqlite
+      - ./data:/data
   ui:
     container_name: ui
     image: ghcr.io/karbasia/blog-ui:latest
