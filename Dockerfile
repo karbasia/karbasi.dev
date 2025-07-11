@@ -1,8 +1,6 @@
 # Build stage
 FROM golang:1.24.4-alpine3.22 AS builder
 
-RUN apk add --no-cache gcc musl-dev
-
 WORKDIR /app
 
 # Copy go mod and sum files
@@ -13,7 +11,7 @@ RUN go mod download
 COPY . .
 
 # Build the API binary
-RUN CGO_ENABLED=1 GOOS=linux go build -o api ./cmd/api
+RUN CGO_ENABLED=0 GOOS=linux go build -o api ./cmd/api
 
 # Final stage
 FROM alpine:3.22.0

@@ -18,7 +18,7 @@ help:
 audit: test
 	go mod tidy -diff
 	go mod verify
-	test -z "$(shell gofmt -l .)" 
+	test -z "$(shell gofmt -l .)"
 	go vet ./...
 	go run honnef.co/go/tools/cmd/staticcheck@latest -checks=all,-ST1000,-U1000 ./...
 	go run golang.org/x/vuln/cmd/govulncheck@latest ./...
@@ -48,7 +48,7 @@ tidy:
 .PHONY: build
 build:
 	go build -o=./tmp/bin/api ./cmd/api
-	
+
 ## run: run the cmd/api application
 .PHONY: run
 run: build
@@ -67,15 +67,14 @@ run/live:
 ## migrations/up: apply all up database migrations
 .PHONY: migrations/up
 migrations/up:
-	@goose sqlite3 ./db.sqlite -dir=./assets/migrations up
+	@goose sqlite ./db.sqlite -dir=./assets/migrations up
 
 ## migrations/down: apply all down database migrations
 .PHONY: migrations/down
 migrations/down:
-	@goose sqlite3 ./db.sqlite -dir=./assets/migrations down
+	@goose sqlite ./db.sqlite -dir=./assets/migrations down
 
 ## migrations/version: print the current in-use migration version
 .PHONY: migrations/version
 migrations/version:
-	@goose sqlite3 ./db.sqlite -dir=./assets/migrations version
-
+	@goose sqlite ./db.sqlite -dir=./assets/migrations version
