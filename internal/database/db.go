@@ -8,7 +8,7 @@ import (
 	"github.com/karbasia/karbasi.dev/assets"
 	"github.com/pressly/goose/v3"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 )
 
 const DefaultTimeout = 30 * time.Second
@@ -16,7 +16,7 @@ const DefaultTimeout = 30 * time.Second
 func New(dsn string, automigrate bool) (*sql.DB, error) {
 
 	pragmas := "?_fk=1"
-	db, err := sql.Open("sqlite3", dsn+pragmas)
+	db, err := sql.Open("sqlite", dsn+pragmas)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func New(dsn string, automigrate bool) (*sql.DB, error) {
 	if automigrate {
 		goose.SetBaseFS(assets.EmbeddedFiles)
 
-		if err := goose.SetDialect("sqlite3"); err != nil {
+		if err := goose.SetDialect("sqlite"); err != nil {
 			return nil, err
 		}
 		if err := goose.Up(db, "migrations"); err != nil {

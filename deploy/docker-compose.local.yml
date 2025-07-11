@@ -1,6 +1,9 @@
 services:
   caddy:
-    image: caddy:2.10.0
+    container_name: caddy
+    build:
+      context: ./caddy
+      dockerfile: Dockerfile
     env_file:
       - .env
     restart: always
@@ -15,13 +18,17 @@ services:
       - ./caddy/caddy_config:/config
   api:
     container_name: api
-    image: ghcr.io/karbasia/blog-api:latest
+    build:
+      context: ../
+      dockerfile: Dockerfile
     restart: always
     volumes:
-      - ./db.sqlite:/app/db.sqlite
+      - ./data:/data
   ui:
     container_name: ui
-    image: ghcr.io/karbasia/blog-ui:latest
+    build:
+      context: ../ui
+      dockerfile: Dockerfile
     env_file:
       - .env
     restart: always

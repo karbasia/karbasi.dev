@@ -50,7 +50,7 @@ func run(logger *slog.Logger) error {
 
 	cfg.baseURL = env.GetString("BASE_URL", "http://localhost:8080")
 	cfg.httpPort = env.GetInt("HTTP_PORT", 8080)
-	cfg.db.dsn = env.GetString("DB_DSN", "db.sqlite")
+	cfg.db.dsn = env.GetString("DB_DSN", "/data/db.sqlite")
 	cfg.db.automigrate = env.GetBool("DB_AUTOMIGRATE", true)
 	cfg.jwt.accessSecretKey = env.GetString("JWT_ACCESS_SECRET", "vyiwjr425wpr277oxf34tcmg73mmkcks")
 	cfg.jwt.refreshSecretKey = env.GetString("JWT_REFRESH_SECRET", "tqAp56ce2i2XmpoAsubxkgV0ThBYYFBV")

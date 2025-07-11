@@ -1,0 +1,33 @@
+services:
+  caddy:
+    container_name: caddy
+    build:
+      context: ./caddy
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    restart: always
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "443:443"
+    volumes:
+      - ./caddy/conf:/etc/caddy
+      - ./caddy/site:/srv
+      - ./caddy/caddy_data:/data
+      - ./caddy/caddy_config:/config
+  api:
+    container_name: api
+    image: ghcr.io/karbasia/blog-api:latest
+    restart: always
+    volumes:
+      - ./data:/data
+  ui:
+    container_name: ui
+    image: ghcr.io/karbasia/blog-ui:latest
+    env_file:
+      - .env
+    restart: always
+networks:
+  default:
+    name: local
