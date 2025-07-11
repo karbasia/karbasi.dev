@@ -1,0 +1,8 @@
+# Domain should go here
+https://karbasi.dev {
+    reverse_proxy ui:3000
+    tls {
+        dns cloudflare {env.CF_TOKEN}
+        resolvers 1.1.1.1
+    }
+}
