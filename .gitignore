@@ -26,3 +26,6 @@ tmp/
 build-errors.log
 node_modules/
 Caddyfile
+deploy/caddy/caddy_config/
+deploy/caddy/caddy_data/
+deploy/caddy/site/
