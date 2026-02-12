@@ -47,17 +47,31 @@ func (s *FileStore) Create(ctx context.Context, file *File) error {
 	return nil
 }
 
-func (s *FileStore) GetAll(ctx context.Context) ([]File, error) {
+func (s *FileStore) GetAll(ctx context.Context, params PaginationParams) (PaginatedResult[File], error) {
 	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
 	defer cancel()
+
+	var totalItems int
+	err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM files`).Scan(&totalItems)
+	if err != nil {
+		return PaginatedResult[File]{}, err
+	}
+
+	offset := (params.Page - 1) * params.PageSize
+	totalPages := 0
+	if params.PageSize > 0 {
+		totalPages = (totalItems + params.PageSize - 1) / params.PageSize
+	}
+
 	query := `
 		SELECT id, name, created_at, updated_at, deleted_at
 		FROM files
+		LIMIT $1 OFFSET $2
 	`
 
-	rows, err := s.db.QueryContext(ctx, query)
+	rows, err := s.db.QueryContext(ctx, query, params.PageSize, offset)
 	if err != nil {
-		return nil, err
+		return PaginatedResult[File]{}, err
 	}
 	defer rows.Close()
 
@@ -72,11 +86,19 @@ func (s *FileStore) GetAll(ctx context.Context) ([]File, error) {
 			&f.DeletedAt,
 		)
 		if err != nil {
-			return nil, err
+			return PaginatedResult[File]{}, err
 		}
 		files = append(files, f)
 	}
-	return files, nil
+	return PaginatedResult[File]{
+		Items: files,
+		Pagination: PaginationMeta{
+			Page:       params.Page,
+			PageSize:   params.PageSize,
+			TotalItems: totalItems,
+			TotalPages: totalPages,
+		},
+	}, nil
 }
 
 func (s *FileStore) GetByID(ctx context.Context, id int) (*File, bool, error) {

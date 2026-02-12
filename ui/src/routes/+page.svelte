@@ -1,5 +1,6 @@
 <script lang="ts">
 	import TagSidebar from '$lib/components/layout/TagSidebar.svelte';
+	import Pagination from '$lib/components/layout/Pagination.svelte';
 	import PostCard from '$lib/components/post/PostCard.svelte';
 
 	import type { PageProps } from './$types';
@@ -13,10 +14,9 @@
 
 <section class="flex-1">
 	{#each data.posts as post}
-		{#if !post.deleted_at && post.active}
-			<PostCard {post}></PostCard>
-		{/if}
+		<PostCard {post}></PostCard>
 	{/each}
+	<Pagination page={data.pagination.page} totalPages={data.pagination.total_pages} baseUrl="/" />
 </section>
 
 <aside class="ml-4 hidden w-64 sm:block">

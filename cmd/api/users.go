@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/karbasia/karbasi.dev/internal/pagination"
 	"github.com/karbasia/karbasi.dev/internal/password"
 	"github.com/karbasia/karbasi.dev/internal/request"
 	"github.com/karbasia/karbasi.dev/internal/response"
@@ -100,11 +101,13 @@ func (app *application) getUserByID(w http.ResponseWriter, r *http.Request) {
 func (app *application) getAllUsers(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	users, err := app.store.Users.GetAll(ctx)
+	params := pagination.FromRequest(r)
+	result, err := app.store.Users.GetAll(ctx, params)
 	if err != nil {
 		app.serverError(w, r, err)
+		return
 	}
-	err = response.JSON(w, http.StatusOK, users)
+	err = response.JSON(w, http.StatusOK, result.Items, result.Pagination)
 	if err != nil {
 		app.serverError(w, r, err)
 	}

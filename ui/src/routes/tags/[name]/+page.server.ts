@@ -1,19 +1,23 @@
 import { error } from '@sveltejs/kit';
 
 import type { PageServerLoad } from './$types';
-import { createRequest } from '$lib/server/api';
+import { createPaginatedRequest } from '$lib/server/api';
 import { type Post } from '$lib/models/post';
 import { httpRequestEnum, type RequestParams } from '$lib/models/api';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, url }) => {
+	const page = url.searchParams.get('page') || '1';
+
 	const reqParams: RequestParams = {
 		method: httpRequestEnum.enum.GET,
 		path: `/tags/${params.name}`,
+		query: { page, page_size: '10' },
 	};
-	const posts = await createRequest<Post[]>(reqParams);
-	if ('error' in posts) return error(posts.code, posts.error);
+	const result = await createPaginatedRequest<Post>(reqParams);
+	if ('error' in result) return error(result.code, result.error);
 
 	return {
-		posts,
+		posts: result.items,
+		pagination: result.pagination,
 	};
 };

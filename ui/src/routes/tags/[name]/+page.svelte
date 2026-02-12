@@ -1,5 +1,7 @@
 <script lang="ts">
 	import PostCard from '$lib/components/post/PostCard.svelte';
+	import Pagination from '$lib/components/layout/Pagination.svelte';
+	import { page } from '$app/state';
 
 	const { data } = $props();
 </script>
@@ -9,8 +11,7 @@
 		<p>This tag does not contain any posts.</p>
 	{/if}
 	{#each data.posts as post}
-		{#if !post.deleted_at && post.active}
-			<PostCard {post}></PostCard>
-		{/if}
+		<PostCard {post}></PostCard>
 	{/each}
+	<Pagination page={data.pagination.page} totalPages={data.pagination.total_pages} baseUrl={`/tags/${page.params.name}`} />
 </span>

@@ -131,14 +131,26 @@ func (s *UserStore) GetByEmail(ctx context.Context, email string) (*User, bool, 
 	return &user, true, err
 }
 
-func (s *UserStore) GetAll(ctx context.Context) ([]User, error) {
+func (s *UserStore) GetAll(ctx context.Context, params PaginationParams) (PaginatedResult[User], error) {
 	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
 	defer cancel()
 
-	query := `SELECT id, full_name, email, created_at, updated_at FROM users WHERE deleted_at IS NULL`
-	rows, err := s.db.QueryContext(ctx, query)
+	var totalItems int
+	err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM users WHERE deleted_at IS NULL`).Scan(&totalItems)
 	if err != nil {
-		return nil, err
+		return PaginatedResult[User]{}, err
+	}
+
+	offset := (params.Page - 1) * params.PageSize
+	totalPages := 0
+	if params.PageSize > 0 {
+		totalPages = (totalItems + params.PageSize - 1) / params.PageSize
+	}
+
+	query := `SELECT id, full_name, email, created_at, updated_at FROM users WHERE deleted_at IS NULL LIMIT $1 OFFSET $2`
+	rows, err := s.db.QueryContext(ctx, query, params.PageSize, offset)
+	if err != nil {
+		return PaginatedResult[User]{}, err
 	}
 	defer rows.Close()
 
@@ -153,9 +165,17 @@ func (s *UserStore) GetAll(ctx context.Context) ([]User, error) {
 			&u.UpdatedAt,
 		)
 		if err != nil {
-			return nil, err
+			return PaginatedResult[User]{}, err
 		}
 		users = append(users, u)
 	}
-	return users, nil
+	return PaginatedResult[User]{
+		Items: users,
+		Pagination: PaginationMeta{
+			Page:       params.Page,
+			PageSize:   params.PageSize,
+			TotalItems: totalItems,
+			TotalPages: totalPages,
+		},
+	}, nil
 }
