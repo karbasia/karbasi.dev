@@ -3,6 +3,7 @@
 	import PostsGrid from '$lib/components/post/PostsGrid.svelte';
 	import TagsGrid from '$lib/components/tag/TagsGrid.svelte';
 	import FilesPage from './_components/FilesPage.svelte';
+	import Button from '$lib/components/ui/button/button.svelte';
 
 	const { data } = $props();
 </script>
@@ -14,6 +15,9 @@
 		<Tabs.Trigger value="files">Files</Tabs.Trigger>
 	</Tabs.List>
 	<Tabs.Content value="posts">
+		<div class="my-4">
+			<Button href="/admin/posts/create">Create Post</Button>
+		</div>
 		<PostsGrid posts={data.posts} />
 	</Tabs.Content>
 	<Tabs.Content value="tags">

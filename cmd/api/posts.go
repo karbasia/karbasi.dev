@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/karbasia/karbasi.dev/internal/pagination"
 	"github.com/karbasia/karbasi.dev/internal/request"
 	"github.com/karbasia/karbasi.dev/internal/response"
 	"github.com/karbasia/karbasi.dev/internal/store"
@@ -149,14 +150,15 @@ func (app *application) getAllPosts(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		showDeleted = false
 	}
-	posts, err := app.store.Posts.GetAll(ctx, showDeleted)
 
+	params := pagination.FromRequest(r)
+	result, err := app.store.Posts.GetAll(ctx, showDeleted, params)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
 	}
 
-	err = response.JSON(w, http.StatusOK, posts)
+	err = response.JSON(w, http.StatusOK, result.Items, result.Pagination)
 	if err != nil {
 		app.serverError(w, r, err)
 		return

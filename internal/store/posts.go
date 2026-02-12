@@ -187,13 +187,36 @@ func (s *PostStore) GetBySlug(ctx context.Context, slug string) (*Post, bool, er
 	return &post, true, nil
 }
 
-func (s *PostStore) GetAllByTag(ctx context.Context, tagName string) ([]Post, error) {
+func (s *PostStore) GetAllByTag(ctx context.Context, tagName string, params PaginationParams) (PaginatedResult[Post], error) {
+	countQuery := `
+		SELECT COUNT(DISTINCT p.id)
+		FROM posts p
+		INNER JOIN posts_to_tags pt ON p.id = pt.post_id
+		INNER JOIN tags t ON pt.tag_id = t.id
+		WHERE t.name=$1 AND p.deleted_at IS NULL AND p.active = 1
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
+	defer cancel()
+
+	var totalItems int
+	err := s.db.QueryRowContext(ctx, countQuery, tagName).Scan(&totalItems)
+	if err != nil {
+		return PaginatedResult[Post]{}, err
+	}
+
+	offset := (params.Page - 1) * params.PageSize
+	totalPages := 0
+	if params.PageSize > 0 {
+		totalPages = (totalItems + params.PageSize - 1) / params.PageSize
+	}
+
 	query := `
 		SELECT p.id, p.title, p.slug, p.headline, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, u.id, u.full_name,
 			json_group_array(
-				json_object('id', t.id, 'name', t.name)
+				json_object('id', t2.id, 'name', t2.name)
 			) filter (
-				where t.id IS NOT NULL
+				where t2.id IS NOT NULL
 			) AS tags
 		FROM posts p
 		INNER JOIN users u ON p.created_by_id = u.id
@@ -201,17 +224,15 @@ func (s *PostStore) GetAllByTag(ctx context.Context, tagName string) ([]Post, er
 		INNER JOIN tags t ON pt.tag_id = t.id
 		LEFT JOIN posts_to_tags pt2 ON p.id = pt2.post_id
 		LEFT JOIN tags t2 ON pt2.tag_id = t2.id
-		WHERE t2.name=$1 AND p.deleted_at IS NULL
+		WHERE t.name=$1 AND p.deleted_at IS NULL AND p.active = 1
 		GROUP BY p.id
 		ORDER BY p.posted_at DESC
+		LIMIT $2 OFFSET $3
 	`
 
-	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
-	defer cancel()
-
-	rows, err := s.db.QueryContext(ctx, query, tagName)
+	rows, err := s.db.QueryContext(ctx, query, tagName, params.PageSize, offset)
 	if err != nil {
-		return nil, err
+		return PaginatedResult[Post]{}, err
 	}
 
 	defer rows.Close()
@@ -235,22 +256,52 @@ func (s *PostStore) GetAllByTag(ctx context.Context, tagName string) ([]Post, er
 			&tagData,
 		)
 		if err != nil {
-			return nil, err
+			return PaginatedResult[Post]{}, err
 		}
 		err = json.Unmarshal([]byte(tagData), &p.Tags)
 		if err != nil {
-			return nil, err
+			return PaginatedResult[Post]{}, err
 		}
 		posts = append(posts, p)
 	}
-	return posts, nil
+	return PaginatedResult[Post]{
+		Items: posts,
+		Pagination: PaginationMeta{
+			Page:       params.Page,
+			PageSize:   params.PageSize,
+			TotalItems: totalItems,
+			TotalPages: totalPages,
+		},
+	}, nil
 }
 
-func (s *PostStore) GetAll(ctx context.Context, showDeleted bool) ([]Post, error) {
+func (s *PostStore) GetAll(ctx context.Context, showDeleted bool, params PaginationParams) (PaginatedResult[Post], error) {
 	filterParam := ""
 	if !showDeleted {
-		filterParam = "WHERE p.deleted_at IS NULL"
+		filterParam = "WHERE p.deleted_at IS NULL AND p.active = 1"
 	}
+
+	countQuery := fmt.Sprintf(`
+		SELECT COUNT(*)
+		FROM posts p
+		%s
+	`, filterParam)
+
+	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
+	defer cancel()
+
+	var totalItems int
+	err := s.db.QueryRowContext(ctx, countQuery).Scan(&totalItems)
+	if err != nil {
+		return PaginatedResult[Post]{}, err
+	}
+
+	offset := (params.Page - 1) * params.PageSize
+	totalPages := 0
+	if params.PageSize > 0 {
+		totalPages = (totalItems + params.PageSize - 1) / params.PageSize
+	}
+
 	query := fmt.Sprintf(`
 		SELECT p.id, p.title, p.slug, p.headline, p.active, p.created_by_id, p.posted_at, p.created_at, p.updated_at, u.id, u.full_name, p.deleted_at,
 			json_group_array(
@@ -265,14 +316,12 @@ func (s *PostStore) GetAll(ctx context.Context, showDeleted bool) ([]Post, error
 		%s
 		GROUP BY p.id
 		ORDER BY p.posted_at DESC
+		LIMIT $1 OFFSET $2
 	`, filterParam)
 
-	ctx, cancel := context.WithTimeout(ctx, database.DefaultTimeout)
-	defer cancel()
-
-	rows, err := s.db.QueryContext(ctx, query)
+	rows, err := s.db.QueryContext(ctx, query, params.PageSize, offset)
 	if err != nil {
-		return nil, err
+		return PaginatedResult[Post]{}, err
 	}
 
 	defer rows.Close()
@@ -297,15 +346,23 @@ func (s *PostStore) GetAll(ctx context.Context, showDeleted bool) ([]Post, error
 			&tagData,
 		)
 		if err != nil {
-			return nil, err
+			return PaginatedResult[Post]{}, err
 		}
 		err = json.Unmarshal([]byte(tagData), &p.Tags)
 		if err != nil {
-			return nil, err
+			return PaginatedResult[Post]{}, err
 		}
 		posts = append(posts, p)
 	}
-	return posts, nil
+	return PaginatedResult[Post]{
+		Items: posts,
+		Pagination: PaginationMeta{
+			Page:       params.Page,
+			PageSize:   params.PageSize,
+			TotalItems: totalItems,
+			TotalPages: totalPages,
+		},
+	}, nil
 }
 
 func removeTags(ctx context.Context, tx *sql.Tx, postID int, tags []Tag) error {

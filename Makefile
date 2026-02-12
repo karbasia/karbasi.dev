@@ -57,7 +57,7 @@ run: build
 ## run/live: run the application with reloading on file changes
 .PHONY: run/live
 run/live:
-	air
+	export DB_DSN=./db.sqlite && air
 
 
 # ==================================================================================== #

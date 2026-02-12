@@ -5,11 +5,16 @@ import (
 	"net/http"
 )
 
-func JSON(w http.ResponseWriter, status int, data any) error {
+func JSON(w http.ResponseWriter, status int, data any, pagination ...any) error {
 	type envelope struct {
-		Data any `json:"data"`
+		Data       any `json:"data"`
+		Pagination any `json:"pagination,omitempty,omitzero"`
 	}
-	return JSONWithHeaders(w, status, &envelope{Data: data}, nil)
+	var pag any
+	if len(pagination) > 0 {
+		pag = pagination[0]
+	}
+	return JSONWithHeaders(w, status, &envelope{Data: data, Pagination: pag}, nil)
 }
 
 func JSONError(w http.ResponseWriter, status int, data any, headers http.Header) error {

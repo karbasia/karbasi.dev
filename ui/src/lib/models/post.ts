@@ -24,4 +24,7 @@ export const postFormSchema = postSchema.omit({
 	deleted_at: true,
 });
 
+export const postCreateSchema = postFormSchema.omit({ id: true });
+
 export type Post = z.infer<typeof postSchema>;
+export type PostCreate = z.infer<typeof postCreateSchema>;
